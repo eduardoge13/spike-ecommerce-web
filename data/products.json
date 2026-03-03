@@ -1,0 +1,11 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Producto de Ejemplo",
+    "description": "Esta es una descripción de ejemplo. Reemplazar con productos reales del cliente.",
+    "price": 50000,
+    "image": "/placeholder-product.jpg",
+    "category": "General",
+    "stock": 10
+  }
+]
