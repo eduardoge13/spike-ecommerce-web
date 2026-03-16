@@ -104,4 +104,4 @@ jobs:
           git reset --hard "origin/$DEPLOY_BRANCH"
 
           bash ./scripts/deploy-production.sh
-REMOTE
+          REMOTE
