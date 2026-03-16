@@ -1,0 +1,9 @@
+services:
+  ecommerce:
+    build: .
+    container_name: spike_ecommerce
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
