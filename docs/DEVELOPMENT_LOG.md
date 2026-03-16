@@ -159,3 +159,49 @@ _To be documented..._
 - [ ] Add webhook handlers
 - [ ] Create order confirmation page
 
+---
+
+## Session 3 - Landing Integration & Consolidation (2026-03-09)
+
+### ✅ Completed
+
+**High-conversion Landing Integration**
+- Rebuilt homepage in `app/page.tsx` with a conversion-focused structure:
+  - Header with visible logo and clear CTA
+  - Hero with product slideshow (controls + autoplay)
+  - Social proof and testimonials
+  - Benefits section
+  - Product outcomes/features section
+  - 3-step process section
+  - Final CTA section
+
+**Brand Alignment**
+- Applied Punto Clave MX visual direction and copy in Spanish.
+- Integrated official assets from existing public files:
+  - `public/logo.jpeg`
+  - `public/products/*.jpeg`
+
+**WhatsApp Conversion Flow**
+- Added product-specific WhatsApp links with prefilled encoded messages:
+  - `https://wa.me/<number>?text=${encodeURIComponent(message)}`
+- Kept final CTA linked to WhatsApp contact flow.
+
+**Repository Cleanup / Single Source of Truth**
+- Removed temporary duplicate static version folder (`landing-static/`).
+- Consolidated homepage versioning to Next.js app only (`app/page.tsx`).
+
+### 🧭 Current Source of Truth
+- Homepage: `app/page.tsx`
+- Product images: `public/products/*`
+- Brand logo: `public/logo.jpeg`
+
+### 🎯 Next Suggested Step
+- Optional: extract homepage blocks into reusable components (`components/home/*`) to simplify future iterations while preserving this baseline.
+
+### 🔄 Rollback Note (2026-03-09)
+- Homepage was reverted to the previous stable Spike layout due copy/UX preference and WhatsApp link reliability.
+- Current active homepage remains the original Spike-style implementation in `app/page.tsx`.
+- WhatsApp flow is confirmed through:
+  - static CTA in homepage (`wa.me` link)
+  - dynamic per-product links in `components/ProductCard.tsx` using `encodeURIComponent`.
+

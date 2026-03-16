@@ -1,74 +1,48 @@
 [
   {
-    "id": "prod_001",
-    "name": "Producto Premium",
-    "description": "Producto de alta calidad con características excepcionales y diseño moderno",
-    "price": 99900,
-    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop",
-    "category": "Premium",
-    "stock": 15
+    "id": "iphone-17-pro-max",
+    "name": "iPhone 17 Pro Max 256GB",
+    "description": "El poder de lo Pro, llevado al maximo. Diseno premium, camaras Pro de ultima generacion, rendimiento ultra rapido, bateria para todo el dia. Nuevo, Original, Sellado.",
+    "price": 2599900,
+    "originalPrice": 3099900,
+    "image": "/products/iphone-17-pro-max-2.jpeg",
+    "images": [
+      "/products/iphone-17-pro-max-1.jpeg",
+      "/products/iphone-17-pro-max-2.jpeg",
+      "/products/iphone-17-pro-max-3.jpeg"
+    ],
+    "category": "iPhone",
+    "stock": 5,
+    "whatsappMessage": "Hola! Me interesa el iPhone 17 Pro Max 256GB a $25,999. Esta disponible?"
   },
   {
-    "id": "prod_002",
-    "name": "Producto Clásico",
-    "description": "Diseño atemporal que nunca pasa de moda, perfecto para cualquier ocasión",
-    "price": 79900,
-    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
-    "category": "Clásico",
-    "stock": 22
+    "id": "iphone-16",
+    "name": "iPhone 16",
+    "description": "Potencia, Camara y Diseno. La mejor oferta del ano. Rendimiento increible, Camara Dual de 48 MP, Diseno Premium. Disponible ahora. Oferta por tiempo limitado.",
+    "price": 1449900,
+    "originalPrice": 1749900,
+    "image": "/products/iphone-16-2.jpeg",
+    "images": [
+      "/products/iphone-16-1.jpeg",
+      "/products/iphone-16-2.jpeg",
+      "/products/iphone-16-3.jpeg"
+    ],
+    "category": "iPhone",
+    "stock": 8,
+    "whatsappMessage": "Hola! Me interesa el iPhone 16 a $14,499. Esta disponible?"
   },
   {
-    "id": "prod_003",
-    "name": "Producto Deportivo",
-    "description": "Ideal para tu estilo de vida activo, comodidad y rendimiento garantizados",
-    "price": 129900,
-    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
-    "category": "Deportivo",
-    "stock": 8
-  },
-  {
-    "id": "prod_004",
-    "name": "Producto Elegante",
-    "description": "Sofisticación y estilo en cada detalle, para los momentos especiales",
-    "price": 149900,
-    "image": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&h=800&fit=crop",
-    "category": "Elegante",
-    "stock": 12
-  },
-  {
-    "id": "prod_005",
-    "name": "Producto Casual",
-    "description": "Comodidad y estilo para el día a día, versatilidad garantizada",
-    "price": 69900,
-    "image": "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=800&h=800&fit=crop",
-    "category": "Casual",
-    "stock": 30
-  },
-  {
-    "id": "prod_006",
-    "name": "Producto Innovador",
-    "description": "Tecnología y diseño de vanguardia para los más exigentes",
-    "price": 179900,
-    "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop",
-    "category": "Innovador",
-    "stock": 6
-  },
-  {
-    "id": "prod_007",
-    "name": "Producto Básico",
-    "description": "Lo esencial sin complicaciones, calidad a precio accesible",
-    "price": 49900,
-    "image": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800&h=800&fit=crop",
-    "category": "Básico",
-    "stock": 45
-  },
-  {
-    "id": "prod_008",
-    "name": "Producto Exclusivo",
-    "description": "Edición limitada, únete al selecto grupo de quienes lo poseen",
-    "price": 249900,
-    "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=800&fit=crop",
-    "category": "Exclusivo",
-    "stock": 3
+    "id": "sonos-era-100",
+    "name": "Sonos ERA 100",
+    "description": "Bocina inteligente con sonido excepcional. Precio Exclusivo Online. Calidad de audio premium para tu hogar.",
+    "price": 360000,
+    "originalPrice": 439900,
+    "image": "/products/sonos-era-100.jpeg",
+    "images": [
+      "/products/sonos-era-100.jpeg"
+    ],
+    "category": "Audio",
+    "stock": 10,
+    "whatsappMessage": "Hola! Me interesa el Sonos ERA 100 a $3,600. Esta disponible?"
   }
 ]
