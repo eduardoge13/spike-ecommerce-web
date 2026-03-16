@@ -1,203 +1,308 @@
-import ProductCard from '@/components/ProductCard';
+'use client';
+
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { WHATSAPP_NUMBER } from '@/lib/constants';
 import { getAllProducts } from '@/lib/products';
+import ProductCard from '@/components/ProductCard';
+import SpeiPaymentSection from '@/components/SpeiPaymentSection';
+
+const products = getAllProducts();
+
+const slides = products.map((p) => ({
+  image: p.image,
+  alt: p.name,
+  badge: p.category ?? 'Destacado',
+  title: p.name,
+  subtitle: p.description.split('.')[0] + '.',
+  price: `$${new Intl.NumberFormat('es-MX').format(p.price / 100)} MXN`,
+  message: p.whatsappMessage ?? `Hola! Me interesa el ${p.name}. Esta disponible?`,
+}));
+
+const waLink = (message: string) =>
+  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 export default function Home() {
-  const products = getAllProducts();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 4800);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Header / Navigation */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">
-                Spike Store
-              </h1>
-              <p className="text-xs text-gray-600 hidden sm:block">Calidad Premium</p>
-            </div>
-            <div className="flex items-center gap-6">
-              <nav className="hidden md:flex gap-8">
-                <a href="#productos" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                  Productos
-                </a>
-                <a href="#categorias" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                  Categorías
-                </a>
-                <a href="#contacto" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                  Contacto
-                </a>
-              </nav>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg">
-                Carrito (0)
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#08132E] text-white antialiased">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(34,196,204,0.2),transparent_34%),radial-gradient(circle_at_90%_5%,rgba(224,64,64,0.14),transparent_28%),radial-gradient(circle_at_50%_60%,rgba(27,58,120,0.2),transparent_44%)]" />
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="container mx-auto px-4 lg:px-8 py-20 lg:py-32 relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold mb-6">
-              🔥 Nueva Colección Disponible
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#08132E]/85 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <a
+            href="/"
+            aria-label="Punto Clave MX"
+            className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-300/35 bg-white px-2.5 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,.22)]"
+          >
+            <Image
+              src="/logo.jpeg"
+              alt="Punto Clave MX"
+              width={132}
+              height={44}
+              className="h-11 w-auto rounded-md object-contain"
+              priority
+            />
+            <div className="hidden sm:block">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0D1F4E]/70">Tienda oficial</p>
+              <p className="text-sm font-bold text-[#0D1F4E]">Punto Clave MX</p>
             </div>
-            <h2 className="text-4xl lg:text-6xl font-black mb-6 leading-tight">
-              Encuentra el producto
-              <br />
-              <span className="text-yellow-300">perfecto para ti</span>
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-              Explora nuestra selección exclusiva de productos de alta calidad.
-              Envío gratis en compras mayores a $1,000 MXN.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <a
-                href="#productos"
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold hover:bg-blue-50 transition-colors shadow-xl inline-block"
-              >
-                Ver Productos
-              </a>
-              <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white/10 transition-colors">
-                Más Información
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
-      </section>
+          </a>
 
-      {/* Features Section */}
-      <section className="py-12 bg-white border-y border-gray-200">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-100 p-4 rounded-full">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900">Calidad Garantizada</h3>
-                <p className="text-sm text-gray-600">Productos verificados</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="bg-green-100 p-4 rounded-full">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900">Envío Rápido</h3>
-                <p className="text-sm text-gray-600">24-48 horas hábiles</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-100 p-4 rounded-full">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900">Pago Seguro</h3>
-                <p className="text-sm text-gray-600">100% protegido</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <nav className="hidden items-center gap-7 md:flex">
+            <a href="#beneficios" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Beneficios</a>
+            <a href="#productos" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Productos</a>
+            <a href="#como-funciona" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Cómo funciona</a>
+            <a href="#pago" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Métodos de pago</a>
+          </nav>
 
-      {/* Products Section */}
-      <section id="productos" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
-              Nuestros Productos
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Descubre nuestra colección exclusiva de productos seleccionados especialmente para ti
-            </p>
-          </div>
+          <a
+            href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden rounded-xl bg-[#E04040] px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#c43333] md:inline-flex"
+          >
+            Comprar por WhatsApp
+          </a>
 
-          {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 bg-white rounded-2xl shadow-md">
-              <div className="text-6xl mb-4">📦</div>
-              <p className="text-gray-500 text-lg font-semibold">
-                Pronto agregaremos más productos
-              </p>
-              <p className="text-gray-400 text-sm mt-2">
-                ¡Mantente atento!
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16 lg:py-20">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-black mb-4">
-            ¿Listo para comprar?
-          </h2>
-          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Únete a miles de clientes satisfechos y encuentra lo que buscas
-          </p>
-          <button className="bg-white text-purple-600 px-10 py-4 rounded-lg font-bold text-lg hover:bg-purple-50 transition-colors shadow-xl">
-            Explorar Ahora
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/25 text-white md:hidden"
+            aria-label="Abrir menú"
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="text-white font-black text-xl mb-4">Spike Store</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Tu destino para productos de calidad premium.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Enlaces</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Productos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Categorías</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Ofertas</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Ayuda</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Envíos</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Devoluciones</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Contacto</h4>
-              <ul className="space-y-2 text-sm">
-                <li>contacto@spikestore.com</li>
-                <li>+52 55 1234 5678</li>
-                <li>Ciudad de México</li>
-              </ul>
+        {menuOpen && (
+          <div className="border-t border-white/10 px-4 py-4 md:hidden">
+            <div className="space-y-3">
+              <a href="#beneficios" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Beneficios</a>
+              <a href="#productos" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Productos</a>
+              <a href="#como-funciona" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Cómo funciona</a>
+              <a href="#pago" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Métodos de pago</a>
+              <a
+                href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex w-full justify-center rounded-xl bg-[#E04040] px-4 py-2.5 text-sm font-semibold text-white"
+                onClick={() => setMenuOpen(false)}
+              >
+                Comprar por WhatsApp
+              </a>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>&copy; 2026 Spike E-commerce. Todos los derechos reservados.</p>
-            <p className="text-gray-500 mt-2">Diseñado con ❤️ para ofrecer la mejor experiencia</p>
+        )}
+      </header>
+
+      <main className="relative z-10">
+        {/* Hero — Carousel + CTA */}
+        <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-8 pt-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:px-8 lg:pt-16">
+          <div>
+            <span className="inline-flex rounded-full border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+              Tecnología premium en México
+            </span>
+            <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
+              Compra tecnología top
+              <span className="block text-cyan-300">con atención inmediata.</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
+              Productos originales, precios competitivos y cierre rápido por WhatsApp.
+              Todo pensado para que compres fácil y sin fricción.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a
+                href={waLink('Hola! Quiero ver los productos disponibles y promociones de hoy.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-xl bg-[#22C4CC] px-6 py-3 text-sm font-bold text-white shadow-[0_10px_35px_rgba(34,196,204,.35)] transition hover:-translate-y-0.5 hover:bg-[#19aeb6]"
+              >
+                Ver catálogo por WhatsApp
+              </a>
+              <a href="#productos" className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                Explorar destacados
+              </a>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-200">
+              <span>✅ Producto original</span>
+              <span>✅ Envío 24-48h</span>
+              <span>✅ Pago seguro</span>
+              <span>✅ Garantía incluida</span>
+            </div>
           </div>
-        </div>
-      </footer>
+
+          <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-[#0D1F4E] shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-red-500/10" />
+            <div className="relative h-[430px] sm:h-[520px]">
+              {slides.map((slide, index) => (
+                <article key={slide.alt} className={`${index === activeSlide ? 'block' : 'hidden'} absolute inset-0`}>
+                  <Image src={slide.image} alt={slide.alt} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain p-3 sm:p-4" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08132E] via-[#08132E]/85 to-transparent p-5">
+                    <span className="inline-flex rounded-full bg-cyan-400/15 px-2.5 py-1 text-[11px] font-semibold text-cyan-200">{slide.badge}</span>
+                    <h3 className="mt-2 text-xl font-bold text-white">{slide.title}</h3>
+                    <p className="mt-1 text-sm text-slate-200">{slide.subtitle}</p>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="text-xl font-extrabold text-white">{slide.price}</p>
+                      <a
+                        href={waLink(slide.message)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1fb558]"
+                      >
+                        Comprar por WhatsApp
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+
+              <button
+                className="absolute left-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
+                aria-label="Anterior"
+                onClick={() => setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+              >
+                ‹
+              </button>
+              <button
+                className="absolute right-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
+                aria-label="Siguiente"
+                onClick={() => setActiveSlide((prev) => (prev + 1) % slides.length)}
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust bar + testimonials */}
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Confianza y credibilidad</p>
+            <div className="mt-6 grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
+              {['Productos originales', 'Compra segura', 'Atención WhatsApp', 'Envío nacional'].map((item) => (
+                <span key={item} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200">{item}</span>
+              ))}
+            </div>
+            <div className="mt-7 grid gap-3 md:grid-cols-3">
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
+                "Me atendieron en minutos por WhatsApp y llegó rápido."
+                <span className="mt-2 block text-xs text-slate-300">Cliente, CDMX</span>
+              </article>
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
+                "Producto original, tal cual la publicación."
+                <span className="mt-2 block text-xs text-slate-300">Cliente, GDL</span>
+              </article>
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
+                "Excelente precio y proceso de compra muy fácil."
+                <span className="mt-2 block text-xs text-slate-300">Cliente, MTY</span>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits */}
+        <section id="beneficios" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-white sm:text-4xl">Por qué comprar aquí</h2>
+          <p className="mt-2 text-slate-300">Beneficios claros para ayudarte a decidir rápido.</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['⚡', 'Entrega rápida', 'Recibe en 24-48h en gran parte de México.'],
+              ['🎯', 'Precio competitivo', 'Ofertas reales en productos premium.'],
+              ['🔒', 'Pago confiable', 'Transferencia SPEI o efectivo — sin cobros ocultos.'],
+              ['💬', 'Soporte humano', 'Asesoría directa por WhatsApp antes de pagar.'],
+            ].map(([icon, title, text]) => (
+              <article key={title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-400/15 text-lg">{icon}</div>
+                <h3 className="text-base font-semibold text-white">{title}</h3>
+                <p className="mt-1.5 text-sm text-slate-300">{text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Product grid */}
+        <section id="productos" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-3xl font-bold text-white sm:text-4xl">Productos destacados</h2>
+              <p className="mt-2 text-slate-300">Selección curada — iPhone, audio y gadgets premium con disponibilidad real.</p>
+            </div>
+            <a
+              href={waLink('Hola! Quiero ver todo el catálogo disponible en Punto Clave MX.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+            >
+              Ver catálogo completo →
+            </a>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="como-funciona" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">Cómo funciona</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {[
+                ['01', 'Explora', 'Revisa productos y elige el ideal para ti.'],
+                ['02', 'Confirma', 'Escríbenos y validamos stock + precio final.'],
+                ['03', 'Recibe', 'Procesamos y enviamos rápido a tu ciudad.'],
+              ].map(([step, title, text]) => (
+                <article key={step} className="rounded-2xl border border-white/10 bg-[#0D1F4E]/75 p-4">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-xs font-bold text-cyan-100">{step}</span>
+                  <h3 className="mt-3 text-base font-semibold text-white">{title}</h3>
+                  <p className="mt-1.5 text-sm text-slate-300">{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SPEI Payment Section */}
+        <section id="pago" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <SpeiPaymentSection />
+        </section>
+
+        {/* Final CTA */}
+        <section className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-3xl border border-cyan-300/30 bg-gradient-to-r from-cyan-400/25 via-cyan-400/10 to-red-500/20 p-7 sm:p-10">
+            <h2 className="max-w-3xl text-3xl font-extrabold text-white sm:text-4xl">¿Listo para cotizar y comprar hoy?</h2>
+            <p className="mt-3 max-w-2xl text-slate-100">Te respondemos rápido por WhatsApp con disponibilidad y mejor oferta.</p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <a
+                href={waLink('Hola! Quiero cotizar ahora mismo sus productos disponibles.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0D1F4E] transition hover:bg-slate-100"
+              >
+                Hablar por WhatsApp
+              </a>
+              <a href="#productos" className="inline-flex items-center justify-center rounded-xl border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+                Ver productos
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
