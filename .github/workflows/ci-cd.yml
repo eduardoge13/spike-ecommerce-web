@@ -1,11 +1,11 @@
 name: CI/CD
 
 on:
-  pull_request:
+  pull_request: {}
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -52,7 +52,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     environment:
       name: production
-      url: ${{ vars.PRODUCTION_HEALTHCHECK_URL }}
+      url: https://shop.srv1175749.hstgr.cloud
 
     steps:
       - name: Configure SSH
