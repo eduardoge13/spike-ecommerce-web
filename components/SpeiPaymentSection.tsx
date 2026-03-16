@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SPEI_CLABE } from '@/lib/constants';
-import { WHATSAPP_NUMBER } from '@/lib/constants';
+import { SPEI_BANK_NAME, SPEI_CLABE, WHATSAPP_NUMBER } from '@/lib/constants';
 
 const waLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -37,17 +36,29 @@ export default function SpeiPaymentSection() {
       </div>
 
       <p className="mt-4 text-sm leading-relaxed text-slate-300 sm:text-base">
-        Realiza tu pago por transferencia SPEI y envía tu comprobante por WhatsApp.
-        Procesamos tu pedido en cuanto recibamos la confirmación.
+        Realiza tu pago por transferencia SPEI a {SPEI_BANK_NAME} y envía tu comprobante por WhatsApp.
+        Procesamos tu pedido en cuanto recibamos la confirmación y podrás validar el banco destino antes de pagar.
       </p>
 
-      {/* CLABE display */}
+      {/* Transfer data */}
       <div className="mt-5 rounded-2xl border border-white/10 bg-[#0D1F4E]/70 p-4 sm:p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Número de CLABE interbancaria</p>
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <span className="font-mono text-2xl font-bold tracking-wider text-white sm:text-3xl">
-            {SPEI_CLABE}
-          </span>
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Banco receptor</p>
+            <p className="mt-2 text-lg font-bold text-white sm:text-xl">{SPEI_BANK_NAME}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-200">
+            Verifica el banco antes de confirmar tu transferencia
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Número SPEI / CLABE interbancaria</p>
+            <span className="mt-2 block font-mono text-2xl font-bold tracking-wider text-white sm:text-3xl">
+              {SPEI_CLABE}
+            </span>
+          </div>
           <button
             type="button"
             onClick={handleCopy}
@@ -69,7 +80,7 @@ export default function SpeiPaymentSection() {
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                Copiar CLABE
+                Copiar número SPEI
               </>
             )}
           </button>
@@ -79,8 +90,8 @@ export default function SpeiPaymentSection() {
       {/* Steps */}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {[
-          ['01', 'Copia la CLABE', 'Usa el botón de arriba para copiarla al portapapeles.'],
-          ['02', 'Realiza la transferencia', 'Desde tu banco en línea o app móvil vía SPEI.'],
+          ['01', 'Verifica el banco', `Confirma que el banco destino mostrado sea ${SPEI_BANK_NAME}.`],
+          ['02', 'Realiza la transferencia', 'Usa el número SPEI de arriba desde tu banca en línea o app móvil.'],
           ['03', 'Envía tu comprobante', 'Mándanos el comprobante por WhatsApp para procesar tu pedido.'],
         ].map(([step, title, text]) => (
           <div key={step} className="flex gap-3">
@@ -109,7 +120,7 @@ export default function SpeiPaymentSection() {
           Enviar comprobante por WhatsApp
         </a>
         <p className="text-xs text-slate-400">
-          También puedes preguntar tu número de cuenta por WhatsApp antes de transferir.
+          Si lo prefieres, te confirmamos por WhatsApp que el banco destino es {SPEI_BANK_NAME} antes de transferir.
         </p>
       </div>
     </div>

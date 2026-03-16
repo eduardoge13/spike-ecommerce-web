@@ -7,6 +7,10 @@ export const WHATSAPP_NUMBER = '5572408666';
 
 /**
  * CLABE interbancaria para pagos por transferencia SPEI
- * TODO: Replace with client's real CLABE
  */
-export const SPEI_CLABE = '000000000000000000';
+export const SPEI_CLABE = '044420256059744448';
+
+/**
+ * Banco receptor para pagos por transferencia SPEI
+ */
+export const SPEI_BANK_NAME = 'Scotiabank';

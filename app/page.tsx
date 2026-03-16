@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
 import { getAllProducts } from '@/lib/products';
@@ -41,7 +42,7 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#08132E]/85 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <a
+          <Link
             href="/"
             aria-label="Punto Clave MX"
             className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-300/35 bg-white px-2.5 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,.22)]"
@@ -58,7 +59,7 @@ export default function Home() {
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0D1F4E]/70">Tienda oficial</p>
               <p className="text-sm font-bold text-[#0D1F4E]">Punto Clave MX</p>
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-7 md:flex">
             <a href="#beneficios" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Beneficios</a>
@@ -199,15 +200,15 @@ export default function Home() {
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-3">
               <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                "Me atendieron en minutos por WhatsApp y llegó rápido."
+                &ldquo;Me atendieron en minutos por WhatsApp y llegó rápido.&rdquo;
                 <span className="mt-2 block text-xs text-slate-300">Cliente, CDMX</span>
               </article>
               <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                "Producto original, tal cual la publicación."
+                &ldquo;Producto original, tal cual la publicación.&rdquo;
                 <span className="mt-2 block text-xs text-slate-300">Cliente, GDL</span>
               </article>
               <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                "Excelente precio y proceso de compra muy fácil."
+                &ldquo;Excelente precio y proceso de compra muy fácil.&rdquo;
                 <span className="mt-2 block text-xs text-slate-300">Cliente, MTY</span>
               </article>
             </div>
