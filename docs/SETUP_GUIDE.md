@@ -79,7 +79,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 1. Configure `.env.local` with client's keys
 2. Add products to database/JSON file
 3. Test checkout flow with test cards
-4. Deploy to Vercel
-5. Configure production webhooks
-6. Test with real transactions in test mode
-7. Switch to production keys when ready
+4. Configure the GitHub `production` environment for VPS deploys
+5. Create the production `.env` file on the VPS
+6. Run the GitHub Actions deployment workflow to `shop.srv1175749.hstgr.cloud`
+7. Configure production webhooks
+8. Test with real transactions in test mode
+9. Switch to production keys when ready
+
+## Production Operations
+
+The deploy flow is documented in [`docs/PRODUCTION_DEPLOYMENT.md`](PRODUCTION_DEPLOYMENT.md).

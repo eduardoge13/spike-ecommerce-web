@@ -1,0 +1,16 @@
+services:
+  ecommerce:
+    container_name: spike_ecommerce
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ecommerce.rule=Host(`shop.srv1175749.hstgr.cloud`)
+      - traefik.http.routers.ecommerce.tls=true
+      - traefik.http.routers.ecommerce.entrypoints=web,websecure
+      - traefik.http.routers.ecommerce.tls.certresolver=mytlschallenge
+      - traefik.http.services.ecommerce.loadbalancer.server.port=3000
+    networks:
+      - n8n_default
+
+networks:
+  n8n_default:
+    external: true

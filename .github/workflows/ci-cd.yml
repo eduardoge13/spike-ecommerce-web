@@ -1,0 +1,107 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spike-ecommerce-web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+  deploy_production:
+    name: Deploy production
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_HEALTHCHECK_URL }}
+
+    steps:
+      - name: Configure SSH
+        env:
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          PRODUCTION_KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$PRODUCTION_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$PRODUCTION_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy over SSH
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_APP_DIR: ${{ vars.PRODUCTION_APP_DIR }}
+          PRODUCTION_COMPOSE_PROJECT: ${{ vars.PRODUCTION_COMPOSE_PROJECT }}
+          PRODUCTION_HEALTHCHECK_URL: ${{ vars.PRODUCTION_HEALTHCHECK_URL }}
+          PRODUCTION_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          : "${PRODUCTION_HOST:?Missing PRODUCTION_HOST secret}"
+          : "${PRODUCTION_USER:?Missing PRODUCTION_USER secret}"
+          : "${PRODUCTION_APP_DIR:?Missing PRODUCTION_APP_DIR variable}"
+          : "${PRODUCTION_COMPOSE_PROJECT:?Missing PRODUCTION_COMPOSE_PROJECT variable}"
+          : "${PRODUCTION_HEALTHCHECK_URL:?Missing PRODUCTION_HEALTHCHECK_URL variable}"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${PRODUCTION_USER}@${PRODUCTION_HOST}" \
+            "APP_DIR='${PRODUCTION_APP_DIR}' DEPLOY_BRANCH='${PRODUCTION_BRANCH}' COMPOSE_PROJECT_NAME='${PRODUCTION_COMPOSE_PROJECT}' HEALTHCHECK_URL='${PRODUCTION_HEALTHCHECK_URL}' bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR"
+
+          if ! git diff --quiet || ! git diff --cached --quiet; then
+            echo "Tracked server changes found. Refusing automated deploy." >&2
+            git status --short
+            exit 1
+          fi
+
+          git fetch origin "$DEPLOY_BRANCH"
+          git checkout "$DEPLOY_BRANCH"
+          git reset --hard "origin/$DEPLOY_BRANCH"
+
+          bash ./scripts/deploy-production.sh
+REMOTE

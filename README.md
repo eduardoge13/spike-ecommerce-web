@@ -4,9 +4,10 @@ E-commerce website with Stripe and Mercado Pago payment integration.
 
 ## Stack
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS
 - **Payments**: Stripe, Mercado Pago
-- **Hosting**: Vercel (recommended)
+- **Hosting**: Hostinger VPS with Docker Compose + Traefik
+- **CI/CD**: GitHub Actions over SSH
 
 ## Getting Started
 
@@ -38,7 +39,15 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## Deployment
 
-Deploy to Vercel with one click or push to GitHub and import.
+- Production deploys run from `.github/workflows/ci-cd.yml`
+- The VPS deploy path uses `docker-compose.yml` + `docker-compose.production.yml`
+- The server-side deploy entrypoint is `scripts/deploy-production.sh`
+- Full setup, secrets, rollback, and VPS notes live in [`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md)
+
+## Operations Docs
+
+- [`docs/SETUP_GUIDE.md`](docs/SETUP_GUIDE.md)
+- [`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md)
 
 ## License
 
