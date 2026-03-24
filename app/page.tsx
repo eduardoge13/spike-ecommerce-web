@@ -1,24 +1,39 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { WHATSAPP_NUMBER } from '@/lib/constants';
-import { getAllProducts } from '@/lib/products';
-import ProductCard from '@/components/ProductCard';
-import SpeiPaymentSection from '@/components/SpeiPaymentSection';
 
-const products = getAllProducts();
+const WHATSAPP_NUMBER = '5215512345678';
 
-const slides = products.map((p) => ({
-  image: p.image,
-  alt: p.name,
-  badge: p.category ?? 'Destacado',
-  title: p.name,
-  subtitle: p.description.split('.')[0] + '.',
-  price: `$${new Intl.NumberFormat('es-MX').format(p.price / 100)} MXN`,
-  message: p.whatsappMessage ?? `Hola! Me interesa el ${p.name}. Esta disponible?`,
-}));
+const slides = [
+  {
+    image: '/products/iphone-17-pro-max-2.jpeg',
+    alt: 'iPhone 17 Pro Max 256GB',
+    badge: 'Nuevo ingreso',
+    title: 'iPhone 17 Pro Max 256GB',
+    subtitle: 'Producto original, sellado y con envío rápido.',
+    price: '$25,999 MXN',
+    message: 'Hola! Me interesa el iPhone 17 Pro Max 256GB a $25,999. Esta disponible?',
+  },
+  {
+    image: '/products/iphone-16-2.jpeg',
+    alt: 'iPhone 16',
+    badge: 'Oferta activa',
+    title: 'iPhone 16',
+    subtitle: 'Excelente precio online con stock limitado.',
+    price: '$14,499 MXN',
+    message: 'Hola! Me interesa el iPhone 16 a $14,499. Esta disponible?',
+  },
+  {
+    image: '/products/sonos-era-100.jpeg',
+    alt: 'Sonos ERA 100',
+    badge: 'Audio premium',
+    title: 'Sonos ERA 100',
+    subtitle: 'Sonido potente para casa o estudio.',
+    price: '$3,600 MXN',
+    message: 'Hola! Me interesa el Sonos ERA 100 a $3,600. Esta disponible?',
+  },
+];
 
 const waLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -39,10 +54,9 @@ export default function Home() {
     <div className="min-h-screen bg-[#08132E] text-white antialiased">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(34,196,204,0.2),transparent_34%),radial-gradient(circle_at_90%_5%,rgba(224,64,64,0.14),transparent_28%),radial-gradient(circle_at_50%_60%,rgba(27,58,120,0.2),transparent_44%)]" />
 
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#08132E]/85 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link
+          <a
             href="/"
             aria-label="Punto Clave MX"
             className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-300/35 bg-white px-2.5 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,.22)]"
@@ -59,13 +73,12 @@ export default function Home() {
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0D1F4E]/70">Tienda oficial</p>
               <p className="text-sm font-bold text-[#0D1F4E]">Punto Clave MX</p>
             </div>
-          </Link>
+          </a>
 
           <nav className="hidden items-center gap-7 md:flex">
             <a href="#beneficios" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Beneficios</a>
             <a href="#productos" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Productos</a>
             <a href="#como-funciona" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Cómo funciona</a>
-            <a href="#pago" className="text-sm font-medium text-slate-200 transition hover:text-cyan-300">Métodos de pago</a>
           </nav>
 
           <a
@@ -95,7 +108,6 @@ export default function Home() {
               <a href="#beneficios" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Beneficios</a>
               <a href="#productos" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Productos</a>
               <a href="#como-funciona" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Cómo funciona</a>
-              <a href="#pago" className="block text-sm text-slate-200" onClick={() => setMenuOpen(false)}>Métodos de pago</a>
               <a
                 href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
                 target="_blank"
@@ -111,7 +123,6 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        {/* Hero — Carousel + CTA */}
         <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-8 pt-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:px-8 lg:pt-16">
           <div>
             <span className="inline-flex rounded-full border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200">
@@ -142,7 +153,6 @@ export default function Home() {
               <span>✅ Producto original</span>
               <span>✅ Envío 24-48h</span>
               <span>✅ Pago seguro</span>
-              <span>✅ Garantía incluida</span>
             </div>
           </div>
 
@@ -189,33 +199,22 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trust bar + testimonials */}
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
             <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Confianza y credibilidad</p>
-            <div className="mt-6 grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
-              {['Productos originales', 'Compra segura', 'Atención WhatsApp', 'Envío nacional'].map((item) => (
+            <div className="mt-6 grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
+              {['Stripe', 'Mercado Pago', 'Compra segura', 'Atención WhatsApp', 'Envío nacional'].map((item) => (
                 <span key={item} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200">{item}</span>
               ))}
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-3">
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Me atendieron en minutos por WhatsApp y llegó rápido.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, CDMX</span>
-              </article>
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Producto original, tal cual la publicación.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, GDL</span>
-              </article>
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Excelente precio y proceso de compra muy fácil.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, MTY</span>
-              </article>
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">“Me atendieron en minutos por WhatsApp y llegó rápido.” <span className="mt-2 block text-xs text-slate-300">Cliente, CDMX</span></article>
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">“Producto original, tal cual la publicación.” <span className="mt-2 block text-xs text-slate-300">Cliente, GDL</span></article>
+              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">“Excelente precio y proceso de compra muy fácil.” <span className="mt-2 block text-xs text-slate-300">Cliente, MTY</span></article>
             </div>
           </div>
         </section>
 
-        {/* Benefits */}
         <section id="beneficios" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-white sm:text-4xl">Por qué comprar aquí</h2>
           <p className="mt-2 text-slate-300">Beneficios claros para ayudarte a decidir rápido.</p>
@@ -223,7 +222,7 @@ export default function Home() {
             {[
               ['⚡', 'Entrega rápida', 'Recibe en 24-48h en gran parte de México.'],
               ['🎯', 'Precio competitivo', 'Ofertas reales en productos premium.'],
-              ['🔒', 'Pago confiable', 'Transferencia SPEI o efectivo — sin cobros ocultos.'],
+              ['🔒', 'Pago confiable', 'Procesamiento seguro con pasarelas confiables.'],
               ['💬', 'Soporte humano', 'Asesoría directa por WhatsApp antes de pagar.'],
             ].map(([icon, title, text]) => (
               <article key={title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -235,30 +234,29 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Product grid */}
         <section id="productos" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl">Productos destacados</h2>
-              <p className="mt-2 text-slate-300">Selección curada — iPhone, audio y gadgets premium con disponibilidad real.</p>
-            </div>
-            <a
-              href={waLink('Hola! Quiero ver todo el catálogo disponible en Punto Clave MX.')}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
-            >
-              Ver catálogo completo →
-            </a>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <h2 className="text-3xl font-bold text-white sm:text-4xl">Resultados que sí importan</h2>
+          <p className="mt-2 text-slate-300">Compra rápida, atención directa y entrega sin complicaciones.</p>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5 lg:col-span-2">
+              <h3 className="text-lg font-semibold text-white">Selección curada de productos top</h3>
+              <p className="mt-2 text-sm text-slate-300">iPhone, audio y gadgets premium con disponibilidad real.</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-semibold text-white">Transparencia de precio</h3>
+              <p className="mt-2 text-sm text-slate-300">Cotización clara y rápida por WhatsApp.</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h3 className="text-lg font-semibold text-white">Cierre en minutos</h3>
+              <p className="mt-2 text-sm text-slate-300">Te guiamos en disponibilidad y pago al instante.</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-white/5 p-5 lg:col-span-2">
+              <h3 className="text-lg font-semibold text-white">Envío nacional con seguimiento</h3>
+              <p className="mt-2 text-sm text-slate-300">Desde que pagas hasta que recibes, con soporte humano.</p>
+            </article>
           </div>
         </section>
 
-        {/* How it works */}
         <section id="como-funciona" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
             <h2 className="text-3xl font-bold text-white sm:text-4xl">Cómo funciona</h2>
@@ -278,12 +276,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SPEI Payment Section */}
-        <section id="pago" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <SpeiPaymentSection />
-        </section>
-
-        {/* Final CTA */}
         <section className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8">
           <div className="overflow-hidden rounded-3xl border border-cyan-300/30 bg-gradient-to-r from-cyan-400/25 via-cyan-400/10 to-red-500/20 p-7 sm:p-10">
             <h2 className="max-w-3xl text-3xl font-extrabold text-white sm:text-4xl">¿Listo para cotizar y comprar hoy?</h2>
