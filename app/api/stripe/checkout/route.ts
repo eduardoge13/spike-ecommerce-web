@@ -49,6 +49,17 @@ export async function POST(request: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       locale: 'es-419',
+      branding_settings: {
+        background_color: '#08132E',
+        border_style: 'rounded',
+        button_color: '#22C4CC',
+        display_name: 'Punto Clave MX',
+        font_family: 'inter',
+        logo: {
+          type: 'url',
+          url: `${origin}/logo.jpeg`,
+        },
+      },
       billing_address_collection: 'required',
       phone_number_collection: { enabled: true },
       shipping_address_collection: { allowed_countries: ['MX'] },
