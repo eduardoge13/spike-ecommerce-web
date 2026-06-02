@@ -44,5 +44,18 @@
     "category": "Audio",
     "stock": 10,
     "whatsappMessage": "Hola! Me interesa el Sonos ERA 100 a $3,600. Esta disponible?"
+  },
+  {
+    "id": "prueba-stripe-200",
+    "name": "Prueba de pago Stripe",
+    "description": "Cargo real de validacion por MXN 200.00 para confirmar checkout, webhook y confirmacion de pedido en Punto Clave MX.",
+    "price": 20000,
+    "image": "/logo.jpeg",
+    "images": [
+      "/logo.jpeg"
+    ],
+    "category": "Prueba",
+    "stock": 20,
+    "whatsappMessage": "Hola! Realice una prueba de pago Stripe por $200 MXN en Punto Clave MX."
   }
 ]

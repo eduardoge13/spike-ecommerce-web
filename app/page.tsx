@@ -11,15 +11,17 @@ import { getAllProducts } from '@/lib/products';
 
 const products = getAllProducts();
 
-const slides = products.map((product) => ({
-  image: product.image,
-  alt: product.name,
-  badge: product.category ?? 'Destacado',
-  title: product.name,
-  subtitle: `${product.description.split('.')[0]}.`,
-  price: `$${new Intl.NumberFormat('es-MX').format(product.price / 100)} MXN`,
-  message: product.whatsappMessage ?? `Hola! Me interesa el ${product.name}. Esta disponible?`,
-}));
+const slides = products
+  .filter((product) => product.category !== 'Prueba')
+  .map((product) => ({
+    image: product.image,
+    alt: product.name,
+    badge: product.category ?? 'Destacado',
+    title: product.name,
+    subtitle: `${product.description.split('.')[0]}.`,
+    price: `$${new Intl.NumberFormat('es-MX').format(product.price / 100)} MXN`,
+    message: product.whatsappMessage ?? `Hola! Me interesa el ${product.name}. Esta disponible?`,
+  }));
 
 const waLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
