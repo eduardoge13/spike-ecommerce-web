@@ -1,11 +1,11 @@
 # Spike E-commerce Web
 
-E-commerce website with Stripe and Mercado Pago payment integration.
+Punto Clave MX storefront with direct Stripe Checkout, WhatsApp-assisted sales, and SPEI fallback.
 
 ## Stack
 
 - **Frontend**: Next.js 16 (App Router), TypeScript, Tailwind CSS
-- **Payments**: Stripe, Mercado Pago
+- **Payments**: Stripe Checkout, SPEI, Mercado Pago-ready scaffolding
 - **Hosting**: Hostinger VPS with Docker Compose + Traefik
 - **CI/CD**: GitHub Actions over SSH
 
@@ -28,6 +28,22 @@ cp .env.example .env.local
 **Get your keys:**
 - Stripe: https://dashboard.stripe.com/apikeys
 - Mercado Pago: https://www.mercadopago.com/developers/panel/app
+
+### Stripe flow
+
+- Product cards launch a hosted Stripe Checkout session from `app/api/stripe/checkout/route.ts`
+- Successful payments land on `/checkout/success` with the order summary
+- Cancelled checkouts return to `/checkout/cancel`
+- `app/api/stripe/webhook/route.ts` is ready for `checkout.session.completed` and related events
+
+### Minimum Stripe env needed
+
+- `STRIPE_SECRET_KEY`
+  Required for checkout session creation and order lookup on the success page.
+- `STRIPE_WEBHOOK_SECRET`
+  Recommended in production so Stripe can sign webhook deliveries to `/api/stripe/webhook`.
+- `NEXT_PUBLIC_APP_URL`
+  Used by the deployed app URL and should point to the production host.
 
 ### 3. Run development server
 
