@@ -36,6 +36,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             -{discountPercent}%
           </div>
         )}
+        {product.isNew && (
+          <div className="absolute top-12 right-3 bg-cyan-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
+            NUEVO
+          </div>
+        )}
         {product.category && (
           <div className="absolute top-3 left-3 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
             {product.category}

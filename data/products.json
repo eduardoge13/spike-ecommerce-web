@@ -1,5 +1,20 @@
 [
   {
+    "id": "iphone-17-espectacolor",
+    "name": "iPhone 17",
+    "description": "Nuevo diseno y colores espectaculares. Mas tu. Original, sellado y con precio especial de lanzamiento.",
+    "price": 1599900,
+    "originalPrice": 1999900,
+    "image": "/products/iphone-17-espectacolor.jpeg",
+    "images": [
+      "/products/iphone-17-espectacolor.jpeg"
+    ],
+    "category": "iPhone",
+    "stock": 4,
+    "isNew": true,
+    "whatsappMessage": "Hola! Me interesa el iPhone 17 a $15,999. Esta disponible?"
+  },
+  {
     "id": "iphone-17-pro-max",
     "name": "iPhone 17 Pro Max 256GB",
     "description": "El poder de lo Pro, llevado al maximo. Diseno premium, camaras Pro de ultima generacion, rendimiento ultra rapido, bateria para todo el dia. Nuevo, Original, Sellado.",

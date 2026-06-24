@@ -8,6 +8,7 @@ export interface Product {
   images?: string[]; // Additional images
   category?: string;
   stock?: number;
+  isNew?: boolean;
   sku?: string;
   whatsappMessage?: string; // Pre-filled WhatsApp message for this product
 }

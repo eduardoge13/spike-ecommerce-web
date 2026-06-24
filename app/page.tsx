@@ -16,7 +16,7 @@ const slides = products
   .map((product) => ({
     image: product.image,
     alt: product.name,
-    badge: product.category ?? 'Destacado',
+    badge: product.isNew ? 'NUEVO' : product.category ?? 'Destacado',
     title: product.name,
     subtitle: `${product.description.split('.')[0]}.`,
     price: `$${new Intl.NumberFormat('es-MX').format(product.price / 100)} MXN`,
