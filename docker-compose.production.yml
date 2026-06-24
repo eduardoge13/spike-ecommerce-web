@@ -3,7 +3,7 @@ services:
     container_name: spike_ecommerce
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ecommerce.rule=Host(`shop.srv1175749.hstgr.cloud`)
+      - traefik.http.routers.ecommerce.rule=Host(`shop.srv1175749.hstgr.cloud`) || Host(`puntoclaveshop.com.mx`) || Host(`www.puntoclaveshop.com.mx`)
       - traefik.http.routers.ecommerce.tls=true
       - traefik.http.routers.ecommerce.entrypoints=web,websecure
       - traefik.http.routers.ecommerce.tls.certresolver=mytlschallenge
