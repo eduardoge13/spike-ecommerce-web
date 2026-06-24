@@ -2,6 +2,7 @@ import { Product } from '@/types/product';
 import Image from 'next/image';
 import StripeCheckoutButton from '@/components/StripeCheckoutButton';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
+import { formatMXNFromCents, getSavingsLabel } from '@/lib/pricing';
 
 interface ProductCardProps {
   product: Product;
@@ -13,14 +14,11 @@ function getWhatsAppLink(product: Product) {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const priceInMXN = new Intl.NumberFormat('es-MX').format(product.price / 100);
+  const priceInMXN = formatMXNFromCents(product.price);
   const originalPriceInMXN = product.originalPrice
-    ? new Intl.NumberFormat('es-MX').format(product.originalPrice / 100)
+    ? formatMXNFromCents(product.originalPrice)
     : null;
-
-  const discountPercent = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
+  const savingsLabel = getSavingsLabel(product.price, product.originalPrice);
 
   return (
     <div className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
@@ -31,24 +29,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {discountPercent > 0 && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-            -{discountPercent}%
-          </div>
-        )}
-        {product.isNew && (
-          <div className="absolute top-12 right-3 bg-cyan-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
-            NUEVO
-          </div>
-        )}
-        {product.category && (
-          <div className="absolute top-3 left-3 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-            {product.category}
-          </div>
-        )}
-        {product.stock !== undefined && product.stock < 10 && (
-          <div className="absolute bottom-3 left-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-            Quedan {product.stock}
+        {savingsLabel && (
+          <div className="absolute top-3 right-3 rounded-full bg-red-600 px-4 py-1.5 text-xs font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(220,38,38,.35)]">
+            {savingsLabel}
           </div>
         )}
       </div>
@@ -60,16 +43,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.description}
         </p>
         <div className="pt-3 border-t border-gray-100">
-          <div className="mb-3">
+          <div className="mb-4">
             {originalPriceInMXN && (
-              <span className="text-sm text-gray-400 line-through mr-2">
-                ${originalPriceInMXN}
-              </span>
+              <p className="text-sm font-semibold text-gray-400">
+                Antes <span className="line-through">${originalPriceInMXN}</span>
+              </p>
             )}
-            <span className="text-2xl font-black text-gray-900">
+            <span className="text-4xl font-black leading-none tracking-tight text-red-600">
               ${priceInMXN}
             </span>
-            <span className="text-sm text-gray-600 ml-1">MXN</span>
+            <span className="ml-1 text-sm font-bold text-red-500">MXN</span>
           </div>
           <div className="space-y-3">
             <StripeCheckoutButton productId={product.id} productName={product.name} />

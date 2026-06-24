@@ -7,6 +7,7 @@ import ProductCard from '@/components/ProductCard';
 import SpeiPaymentSection from '@/components/SpeiPaymentSection';
 import StripePaymentSection from '@/components/StripePaymentSection';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
+import { formatMXNFromCents, getSavingsLabel } from '@/lib/pricing';
 import { getAllProducts } from '@/lib/products';
 
 const products = getAllProducts();
@@ -16,10 +17,11 @@ const slides = products
   .map((product) => ({
     image: product.image,
     alt: product.name,
-    badge: product.isNew ? 'NUEVO' : product.category ?? 'Destacado',
+    badge: getSavingsLabel(product.price, product.originalPrice),
     title: product.name,
     subtitle: `${product.description.split('.')[0]}.`,
-    price: `$${new Intl.NumberFormat('es-MX').format(product.price / 100)} MXN`,
+    price: `$${formatMXNFromCents(product.price)}`,
+    originalPrice: product.originalPrice ? `$${formatMXNFromCents(product.originalPrice)}` : null,
     message: product.whatsappMessage ?? `Hola! Me interesa el ${product.name}. Esta disponible?`,
   }));
 
@@ -217,13 +219,25 @@ export default function Home() {
                     className="object-contain p-3 sm:p-4"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08132E] via-[#08132E]/85 to-transparent p-5">
-                    <span className="inline-flex rounded-full bg-cyan-400/15 px-2.5 py-1 text-[11px] font-semibold text-cyan-200">
-                      {slide.badge}
-                    </span>
+                    {slide.badge && (
+                      <span className="inline-flex rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(220,38,38,.35)]">
+                        {slide.badge}
+                      </span>
+                    )}
                     <h3 className="mt-2 text-xl font-bold text-white">{slide.title}</h3>
                     <p className="mt-1 text-sm text-slate-200">{slide.subtitle}</p>
                     <div className="mt-3 flex items-center justify-between gap-3">
-                      <p className="text-xl font-extrabold text-white">{slide.price}</p>
+                      <div>
+                        {slide.originalPrice && (
+                          <p className="text-xs font-semibold text-slate-300">
+                            Antes <span className="line-through">{slide.originalPrice}</span>
+                          </p>
+                        )}
+                        <p className="text-3xl font-black leading-none text-red-500">
+                          {slide.price}
+                          <span className="ml-1 text-sm font-bold text-red-400">MXN</span>
+                        </p>
+                      </div>
                       <a
                         href="#productos"
                         className="rounded-lg bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1fb558]"
