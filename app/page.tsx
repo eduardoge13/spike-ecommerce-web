@@ -32,6 +32,10 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const goToSlide = (direction: 1 | -1) => {
+    setActiveSlide((prev) => (prev + direction + slides.length) % slides.length);
+  };
+
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slides.length);
@@ -206,60 +210,67 @@ export default function Home() {
           <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-[#0D1F4E] shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-red-500/10" />
             <div className="relative h-[430px] sm:h-[520px]">
-              {slides.map((slide, index) => (
-                <article
-                  key={slide.alt}
-                  className={`${index === activeSlide ? 'block' : 'hidden'} absolute inset-0`}
-                >
-                  <Image
-                    src={slide.image}
-                    alt={slide.alt}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-contain p-3 sm:p-4"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08132E] via-[#08132E]/85 to-transparent p-5">
-                    {slide.badge && (
-                      <span className="inline-flex rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(220,38,38,.35)]">
-                        {slide.badge}
-                      </span>
-                    )}
-                    <h3 className="mt-2 text-xl font-bold text-white">{slide.title}</h3>
-                    <p className="mt-1 text-sm text-slate-200">{slide.subtitle}</p>
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div>
-                        {slide.originalPrice && (
-                          <p className="text-xs font-semibold text-slate-300">
-                            Antes <span className="line-through">{slide.originalPrice}</span>
+              <div
+                className="flex h-full transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none"
+                style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+              >
+                {slides.map((slide, index) => (
+                  <article key={slide.alt} className="relative h-full w-full shrink-0 overflow-hidden">
+                    <Image
+                      src={slide.image}
+                      alt={slide.alt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className={`object-contain p-3 transition-transform duration-[4300ms] ease-out sm:p-4 motion-reduce:transition-none ${
+                        index === activeSlide ? 'scale-[1.035]' : 'scale-100'
+                      }`}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08132E] via-[#08132E]/85 to-transparent p-5">
+                      {slide.badge && (
+                        <span className="inline-flex rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(220,38,38,.35)]">
+                          {slide.badge}
+                        </span>
+                      )}
+                      <h3 className="mt-2 text-xl font-bold text-white">{slide.title}</h3>
+                      <p className="mt-1 text-sm text-slate-200">{slide.subtitle}</p>
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <div>
+                          {slide.originalPrice && (
+                            <p className="text-xs font-semibold text-slate-300">
+                              Antes <span className="line-through">{slide.originalPrice}</span>
+                            </p>
+                          )}
+                          <p className="text-3xl font-black leading-none text-red-500">
+                            {slide.price}
+                            <span className="ml-1 text-sm font-bold text-red-400">MXN</span>
                           </p>
-                        )}
-                        <p className="text-3xl font-black leading-none text-red-500">
-                          {slide.price}
-                          <span className="ml-1 text-sm font-bold text-red-400">MXN</span>
-                        </p>
+                        </div>
+                        <a
+                          href="#productos"
+                          className="rounded-lg bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1fb558]"
+                        >
+                          Comprar hoy
+                        </a>
                       </div>
-                      <a
-                        href="#productos"
-                        className="rounded-lg bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1fb558]"
-                      >
-                        Comprar hoy
-                      </a>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))}
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
+                <div key={activeSlide} className="hero-slide-progress h-full bg-cyan-300" />
+              </div>
 
               <button
                 className="absolute left-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
                 aria-label="Anterior"
-                onClick={() => setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+                onClick={() => goToSlide(-1)}
               >
                 ‹
               </button>
               <button
                 className="absolute right-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
                 aria-label="Siguiente"
-                onClick={() => setActiveSlide((prev) => (prev + 1) % slides.length)}
+                onClick={() => goToSlide(1)}
               >
                 ›
               </button>
