@@ -10,27 +10,42 @@ import { WHATSAPP_NUMBER } from '@/lib/constants';
 import { formatMXNFromCents, getSavingsLabel } from '@/lib/pricing';
 import { getAllProducts } from '@/lib/products';
 
-const products = getAllProducts();
+const allProducts = getAllProducts();
+const catalogProducts = allProducts.filter((p) => p.category !== 'Prueba');
+const categories = [
+  'Todos',
+  ...Array.from(new Set(catalogProducts.map((p) => p.category ?? 'Otros'))),
+];
 
-const slides = products
-  .filter((product) => product.category !== 'Prueba')
-  .map((product) => ({
-    image: product.image,
-    alt: product.name,
-    badge: getSavingsLabel(product.price, product.originalPrice),
-    title: product.name,
-    subtitle: `${product.description.split('.')[0]}.`,
-    price: `$${formatMXNFromCents(product.price)}`,
-    originalPrice: product.originalPrice ? `$${formatMXNFromCents(product.originalPrice)}` : null,
-    message: product.whatsappMessage ?? `Hola! Me interesa el ${product.name}. Esta disponible?`,
-  }));
+const slides = catalogProducts.map((product) => ({
+  image: product.image,
+  alt: product.name,
+  badge: getSavingsLabel(product.price, product.originalPrice),
+  title: product.name,
+  subtitle: `${product.description.split('.')[0]}.`,
+  price: `$${formatMXNFromCents(product.price)}`,
+  originalPrice: product.originalPrice ? `$${formatMXNFromCents(product.originalPrice)}` : null,
+  message: product.whatsappMessage ?? `Hola! Me interesa el ${product.name}. Esta disponible?`,
+}));
 
 const waLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
+const WaIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className ?? 'h-4 w-4 fill-current'}>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>
+);
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [activeCategory, setActiveCategory] = useState('Todos');
+
+  const filteredProducts =
+    activeCategory === 'Todos'
+      ? catalogProducts
+      : catalogProducts.filter((p) => p.category === activeCategory);
 
   const goToSlide = (direction: 1 | -1) => {
     setActiveSlide((prev) => (prev + direction + slides.length) % slides.length);
@@ -40,235 +55,182 @@ export default function Home() {
     const timer = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slides.length);
     }, 4800);
-
     return () => window.clearInterval(timer);
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#08132E] text-white antialiased">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(34,196,204,0.2),transparent_34%),radial-gradient(circle_at_90%_5%,rgba(224,64,64,0.14),transparent_28%),radial-gradient(circle_at_50%_60%,rgba(27,58,120,0.2),transparent_44%)]" />
+    <div className="min-h-screen bg-gray-50 text-gray-900 antialiased">
 
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#08132E]/85 backdrop-blur">
+      {/* ── Announcement bar ── */}
+      <div className="bg-[#0D1F4E] px-4 py-2 text-center text-xs font-semibold tracking-wide text-slate-200">
+        Envío en 24-48h a todo México &nbsp;·&nbsp; Pago seguro con Stripe &nbsp;·&nbsp; Atención directa por WhatsApp
+      </div>
+
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            aria-label="Punto Clave MX"
-            className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-300/35 bg-white px-2.5 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,.22)]"
-          >
+          <Link href="/" aria-label="Punto Clave MX" className="inline-flex items-center gap-3">
             <Image
               src="/logo.jpeg"
               alt="Punto Clave MX"
               width={132}
               height={44}
-              className="h-11 w-auto rounded-md object-contain"
+              className="h-10 w-auto object-contain"
               priority
             />
-            <div className="hidden sm:block">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#0D1F4E]/70">
-                Tienda oficial
-              </p>
-              <p className="text-sm font-bold text-[#0D1F4E]">Punto Clave MX</p>
-            </div>
           </Link>
 
           <nav className="hidden items-center gap-7 md:flex">
-            <a
-              href="#beneficios"
-              className="text-sm font-medium text-slate-200 transition hover:text-cyan-300"
-            >
-              Beneficios
-            </a>
-            <a
-              href="#productos"
-              className="text-sm font-medium text-slate-200 transition hover:text-cyan-300"
-            >
+            <a href="#productos" className="text-sm font-medium text-gray-700 transition hover:text-[#E04040]">
               Productos
             </a>
-            <a
-              href="#como-funciona"
-              className="text-sm font-medium text-slate-200 transition hover:text-cyan-300"
-            >
+            <a href="#como-funciona" className="text-sm font-medium text-gray-700 transition hover:text-[#E04040]">
               Cómo funciona
             </a>
-            <a
-              href="#pago"
-              className="text-sm font-medium text-slate-200 transition hover:text-cyan-300"
-            >
+            <a href="#pago" className="text-sm font-medium text-gray-700 transition hover:text-[#E04040]">
               Métodos de pago
             </a>
           </nav>
 
-          <a
-            href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden rounded-xl bg-[#E04040] px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#c43333] md:inline-flex"
-          >
-            Comprar por WhatsApp
-          </a>
+          <div className="hidden items-center gap-3 md:flex">
+            <a
+              href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-green-400 hover:text-green-600"
+            >
+              <WaIcon className="h-4 w-4 fill-current text-green-500" />
+              WhatsApp
+            </a>
+            <a
+              href="#productos"
+              className="rounded-lg bg-[#E04040] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#c43333]"
+            >
+              Ver productos
+            </a>
+          </div>
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/25 text-white md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-600 md:hidden"
             aria-label="Abrir menú"
             onClick={() => setMenuOpen((prev) => !prev)}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.8}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
 
         {menuOpen && (
-          <div className="border-t border-white/10 px-4 py-4 md:hidden">
+          <div className="border-t border-gray-100 bg-white px-4 py-4 md:hidden">
             <div className="space-y-3">
-              <a
-                href="#beneficios"
-                className="block text-sm text-slate-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                Beneficios
-              </a>
-              <a
-                href="#productos"
-                className="block text-sm text-slate-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                Productos
-              </a>
-              <a
-                href="#como-funciona"
-                className="block text-sm text-slate-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                Cómo funciona
-              </a>
-              <a
-                href="#pago"
-                className="block text-sm text-slate-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                Métodos de pago
-              </a>
+              <a href="#productos" className="block text-sm font-medium text-gray-700" onClick={() => setMenuOpen(false)}>Productos</a>
+              <a href="#como-funciona" className="block text-sm font-medium text-gray-700" onClick={() => setMenuOpen(false)}>Cómo funciona</a>
+              <a href="#pago" className="block text-sm font-medium text-gray-700" onClick={() => setMenuOpen(false)}>Métodos de pago</a>
               <a
                 href={waLink('Hola! Me interesa conocer sus productos disponibles en Punto Clave MX.')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex w-full justify-center rounded-xl bg-[#E04040] px-4 py-2.5 text-sm font-semibold text-white"
+                className="mt-2 inline-flex w-full justify-center rounded-lg bg-[#E04040] px-4 py-2.5 text-sm font-bold text-white"
                 onClick={() => setMenuOpen(false)}
               >
-                Comprar por WhatsApp
+                Ver productos
               </a>
             </div>
           </div>
         )}
       </header>
 
-      <main className="relative z-10">
-        <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-8 pt-12 sm:px-6 lg:grid-cols-2 lg:items-center lg:gap-14 lg:px-8 lg:pt-16">
-          <div>
-            <span className="inline-flex rounded-full border border-cyan-300/35 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200">
-              Tecnología premium en México
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Compra tecnología top
-              <span className="block text-cyan-300">con atención inmediata.</span>
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
-              Productos originales, precios competitivos y checkout seguro con Stripe.
-              Si prefieres trato directo, también cerramos por WhatsApp y SPEI.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#productos"
-                className="inline-flex items-center justify-center rounded-xl bg-[#22C4CC] px-6 py-3 text-sm font-bold text-white shadow-[0_10px_35px_rgba(34,196,204,.35)] transition hover:-translate-y-0.5 hover:bg-[#19aeb6]"
-              >
-                Comprar ahora
-              </a>
-              <a
-                href={waLink('Hola! Quiero ver los productos disponibles y promociones de hoy.')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Ver catálogo por WhatsApp
-              </a>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-200">
-              <span>✅ Producto original</span>
-              <span>✅ Envío 24-48h</span>
-              <span>✅ Pago con Stripe</span>
-              <span>✅ Garantía incluida</span>
-            </div>
-          </div>
+      <main>
 
-          <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-[#0D1F4E] shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-red-500/10" />
-            <div className="relative h-[430px] sm:h-[520px]">
+        {/* ── Hero banner — slim dark ── */}
+        <section className="relative overflow-hidden bg-[#0D1F4E]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_50%,rgba(34,196,204,0.15),transparent_50%),radial-gradient(circle_at_90%_20%,rgba(224,64,64,0.1),transparent_40%)]" />
+          <div className="relative mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2">
+
+            {/* Copy */}
+            <div className="flex flex-col justify-center px-6 py-10 sm:px-10 lg:py-14 lg:px-12">
+              <span className="inline-flex w-fit rounded-full bg-red-600/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-red-400">
+                Tecnología premium · México
+              </span>
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight text-white sm:text-4xl lg:text-5xl">
+                Los mejores iPhones
+                <span className="block text-[#22C4CC]">al mejor precio.</span>
+              </h1>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-300 sm:text-base">
+                Originales, sellados, con garantía. Checkout con Stripe o cierra directo por WhatsApp.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="#productos"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#E04040] px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-[#c43333]"
+                >
+                  Ver productos
+                </a>
+                <a
+                  href={waLink('Hola! Quiero ver los productos disponibles y promociones de hoy.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                >
+                  <WaIcon />
+                  WhatsApp
+                </a>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-4 text-xs font-medium text-slate-400">
+                <span>✅ Original y sellado</span>
+                <span>✅ Envío 24-48h</span>
+                <span>✅ Garantía incluida</span>
+              </div>
+            </div>
+
+            {/* Slideshow */}
+            <div className="relative h-64 overflow-hidden sm:h-80 lg:h-[420px]">
               <div
                 className="flex h-full transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none"
                 style={{ transform: `translateX(-${activeSlide * 100}%)` }}
               >
                 {slides.map((slide, index) => (
-                  <article key={slide.alt} className="relative h-full w-full shrink-0 overflow-hidden">
+                  <article key={slide.alt} className="relative h-full w-full shrink-0">
                     <Image
                       src={slide.image}
                       alt={slide.alt}
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
-                      className={`object-contain p-3 transition-transform duration-[4300ms] ease-out sm:p-4 motion-reduce:transition-none ${
-                        index === activeSlide ? 'scale-[1.035]' : 'scale-100'
+                      className={`object-contain p-4 transition-transform duration-[4300ms] ease-out motion-reduce:transition-none ${
+                        index === activeSlide ? 'scale-[1.03]' : 'scale-100'
                       }`}
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08132E] via-[#08132E]/85 to-transparent p-5">
-                      {slide.badge && (
-                        <span className="inline-flex rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(220,38,38,.35)]">
-                          {slide.badge}
-                        </span>
-                      )}
-                      <h3 className="mt-2 text-xl font-bold text-white">{slide.title}</h3>
-                      <p className="mt-1 text-sm text-slate-200">{slide.subtitle}</p>
-                      <div className="mt-3 flex items-center justify-between gap-3">
-                        <div>
-                          {slide.originalPrice && (
-                            <p className="text-xs font-semibold text-slate-300">
-                              Antes <span className="line-through">{slide.originalPrice}</span>
-                            </p>
-                          )}
-                          <p className="text-3xl font-black leading-none text-red-500">
-                            {slide.price}
-                            <span className="ml-1 text-sm font-bold text-red-400">MXN</span>
-                          </p>
-                        </div>
-                        <a
-                          href="#productos"
-                          className="rounded-lg bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1fb558]"
-                        >
-                          Comprar hoy
-                        </a>
+                    {slide.badge && (
+                      <div className="absolute left-4 top-4 rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-white shadow-lg">
+                        {slide.badge}
                       </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0D1F4E] via-[#0D1F4E]/60 to-transparent px-5 pb-8 pt-10 lg:hidden">
+                      <p className="text-sm font-bold text-white">{slide.title}</p>
+                      {slide.originalPrice && (
+                        <p className="text-xs text-slate-400 line-through">{slide.originalPrice}</p>
+                      )}
+                      <p className="text-lg font-black text-red-400">{slide.price} MXN</p>
                     </div>
                   </article>
                 ))}
               </div>
+
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10">
-                <div key={activeSlide} className="hero-slide-progress h-full bg-cyan-300" />
+                <div key={activeSlide} className="hero-slide-progress h-full bg-[#22C4CC]" />
               </div>
 
               <button
-                className="absolute left-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
+                className="absolute left-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur"
                 aria-label="Anterior"
                 onClick={() => goToSlide(-1)}
               >
                 ‹
               </button>
               <button
-                className="absolute right-3 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white"
+                className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur"
                 aria-label="Siguiente"
                 onClick={() => goToSlide(1)}
               >
@@ -278,146 +240,152 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-              Confianza y credibilidad
-            </p>
-            <div className="mt-6 grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
-              {[
-                'Productos originales',
-                'Checkout Stripe',
-                'Compra segura',
-                'Atención WhatsApp',
-                'Envío nacional',
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-            <div className="mt-7 grid gap-3 md:grid-cols-3">
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Me atendieron en minutos por WhatsApp y llegó rápido.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, CDMX</span>
-              </article>
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Producto original, tal cual la publicación.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, GDL</span>
-              </article>
-              <article className="rounded-xl border border-white/10 bg-[#0D1F4E]/75 p-4 text-sm text-slate-100">
-                &ldquo;Excelente precio y proceso de compra muy fácil.&rdquo;
-                <span className="mt-2 block text-xs text-slate-300">Cliente, MTY</span>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="beneficios" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">Por qué comprar aquí</h2>
-          <p className="mt-2 text-slate-300">
-            Beneficios claros para ayudarte a decidir rápido.
-          </p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* ── Trust strip ── */}
+        <div className="border-b border-gray-200 bg-white">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-3">
             {[
-              ['⚡', 'Entrega rápida', 'Recibe en 24-48h en gran parte de México.'],
-              ['🎯', 'Precio competitivo', 'Ofertas reales en productos premium.'],
-              ['🔒', 'Pago confiable', 'Tarjeta con Stripe o transferencia SPEI.'],
-              ['💬', 'Soporte humano', 'Asesoría directa por WhatsApp antes y después de pagar.'],
-            ].map(([icon, title, text]) => (
-              <article key={title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-400/15 text-lg">
-                  {icon}
-                </div>
-                <h3 className="text-base font-semibold text-white">{title}</h3>
-                <p className="mt-1.5 text-sm text-slate-300">{text}</p>
-              </article>
+              ['✅', 'Productos originales'],
+              ['🔒', 'Checkout Stripe seguro'],
+              ['📦', 'Envío 24-48h nacional'],
+              ['💬', 'Atención por WhatsApp'],
+              ['🛡️', 'Garantía incluida'],
+            ].map(([icon, label]) => (
+              <span key={label} className="flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                <span>{icon}</span>
+                {label}
+              </span>
             ))}
           </div>
-        </section>
+        </div>
 
-        <section id="productos" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl">Productos destacados</h2>
-              <p className="mt-2 text-slate-300">
-                Selección curada con disponibilidad real y checkout inmediato por producto.
-              </p>
-            </div>
+        {/* ── Product catalog ── */}
+        <section id="productos" className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">Productos destacados</h2>
             <a
               href={waLink('Hola! Quiero ver todo el catálogo disponible en Punto Clave MX.')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-600 transition hover:text-green-700"
             >
+              <WaIcon />
               Ver catálogo completo →
             </a>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
+
+          {/* Category filter */}
+          <div className="mb-6 flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  activeCategory === cat
+                    ? 'bg-[#0D1F4E] text-white shadow-sm'
+                    : 'border border-gray-200 bg-white text-gray-600 hover:border-[#0D1F4E] hover:text-[#0D1F4E]'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
 
-        <section id="como-funciona" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Cómo funciona</h2>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {/* ── How it works ── */}
+        <section id="como-funciona" className="border-t border-gray-200 bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <h2 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">Cómo funciona</h2>
+            <div className="grid gap-6 sm:grid-cols-3">
               {[
-                ['01', 'Explora', 'Revisa productos y elige el ideal para ti.'],
-                ['02', 'Paga', 'Compra con Stripe o contáctanos para cerrar por WhatsApp.'],
-                ['03', 'Recibe', 'Procesamos tu pedido y coordinamos el envío a tu ciudad.'],
+                ['01', 'Explora', 'Revisa productos y elige el que más te convenga.'],
+                ['02', 'Paga', 'Checkout seguro con Stripe o cierra por WhatsApp + SPEI.'],
+                ['03', 'Recibe', 'Tu pedido sale en 24h y llega en 24-48h a tu ciudad.'],
               ].map(([step, title, text]) => (
-                <article key={step} className="rounded-2xl border border-white/10 bg-[#0D1F4E]/75 p-4">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-xs font-bold text-cyan-100">
+                <div key={step} className="flex gap-4">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0D1F4E] text-xs font-bold text-white">
                     {step}
                   </span>
-                  <h3 className="mt-3 text-base font-semibold text-white">{title}</h3>
-                  <p className="mt-1.5 text-sm text-slate-300">{text}</p>
-                </article>
+                  <div>
+                    <p className="font-semibold text-gray-900">{title}</p>
+                    <p className="mt-1 text-sm text-gray-500">{text}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="pago" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-            <StripePaymentSection />
-            <SpeiPaymentSection />
+        {/* ── Testimonials ── */}
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <h2 className="mb-5 text-xl font-bold text-gray-900 sm:text-2xl">Lo que dicen nuestros clientes</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              ['"Me atendieron en minutos por WhatsApp y llegó rápido."', 'Cliente, CDMX'],
+              ['"Producto original, tal cual la publicación."', 'Cliente, GDL'],
+              ['"Excelente precio y proceso de compra muy fácil."', 'Cliente, MTY'],
+            ].map(([quote, author]) => (
+              <div key={author} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex gap-0.5 text-yellow-400">
+                  {'★★★★★'.split('').map((s, i) => <span key={i}>{s}</span>)}
+                </div>
+                <p className="text-sm text-gray-700">{quote}</p>
+                <p className="mt-2 text-xs font-semibold text-gray-400">{author}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8">
-          <div className="overflow-hidden rounded-3xl border border-cyan-300/30 bg-gradient-to-r from-cyan-400/25 via-cyan-400/10 to-red-500/20 p-7 sm:p-10">
-            <h2 className="max-w-3xl text-3xl font-extrabold text-white sm:text-4xl">
-              ¿Listo para comprar hoy?
-            </h2>
-            <p className="mt-3 max-w-2xl text-slate-100">
-              Elige tu producto, paga en checkout seguro o escríbenos por WhatsApp para una
-              atención inmediata.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#productos"
-                className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0D1F4E] transition hover:bg-slate-100"
-              >
-                Ir a productos
-              </a>
+        {/* ── Payment methods ── */}
+        <section id="pago" className="border-t border-gray-200 bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <h2 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">Métodos de pago</h2>
+            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+              <StripePaymentSection />
+              <SpeiPaymentSection />
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA band ── */}
+        <section className="bg-[#0D1F4E]">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+              <div>
+                <p className="text-lg font-bold text-white">¿Tienes dudas antes de comprar?</p>
+                <p className="mt-1 text-sm text-slate-300">Escríbenos por WhatsApp — respondemos en minutos.</p>
+              </div>
               <a
                 href={waLink('Hola! Quiero cotizar ahora mismo sus productos disponibles.')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1fb558]"
               >
+                <WaIcon />
                 Hablar por WhatsApp
               </a>
             </div>
           </div>
         </section>
+
+        {/* ── Footer ── */}
+        <footer className="border-t border-gray-200 bg-gray-50">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-between sm:text-left">
+              <p className="text-xs text-gray-400">
+                © {new Date().getFullYear()} Punto Clave MX · Tecnología premium en México
+              </p>
+              <p className="text-xs text-gray-400">Stripe · SPEI · WhatsApp</p>
+            </div>
+          </div>
+        </footer>
+
       </main>
     </div>
   );
