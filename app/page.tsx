@@ -303,21 +303,68 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <h2 className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl">Cómo funciona</h2>
             <div className="grid gap-6 sm:grid-cols-3">
-              {[
-                ['01', 'Explora', 'Revisa productos y elige el que más te convenga.'],
-                ['02', 'Paga', 'Checkout seguro con Stripe o cierra por WhatsApp + SPEI.'],
-                ['03', 'Recibe', 'Tu pedido sale en 24h y llega en 24-48h a tu ciudad.'],
-              ].map(([step, title, text]) => (
-                <div key={step} className="flex gap-4">
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0D1F4E] text-xs font-bold text-white">
-                    {step}
+
+              {/* Step 1 */}
+              <div className="flex gap-4">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0D1F4E] text-xs font-bold text-white">
+                  01
+                </span>
+                <div>
+                  <p className="font-semibold text-gray-900">Explora</p>
+                  <p className="mt-1 text-sm text-gray-500">Revisa productos y elige el que más te convenga.</p>
+                </div>
+              </div>
+
+              {/* Step 2 — highlighted, explained in detail */}
+              <div className="rounded-2xl border-2 border-[#22C4CC]/40 bg-cyan-50/40 p-5 sm:-my-3 sm:p-6">
+                <div className="flex gap-4">
+                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#22C4CC] text-sm font-bold text-white">
+                    02
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">{title}</p>
-                    <p className="mt-1 text-sm text-gray-500">{text}</p>
+                    <p className="text-lg font-bold text-gray-900">Paga como prefieras</p>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Elige la forma más cómoda para cerrar tu compra:
+                    </p>
                   </div>
                 </div>
-              ))}
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-start gap-3 rounded-xl bg-white p-3 shadow-sm">
+                    <svg className="mt-0.5 h-5 w-5 shrink-0 text-[#0D1F4E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a5 5 0 00-10 0v2m-2 0h14a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2z" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">Compra directa en la página</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-gray-500">
+                        Da clic en &ldquo;Pagar con tarjeta&rdquo; en el producto y paga con tarjeta de
+                        crédito o débito en checkout seguro con Stripe. Confirmación al instante.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-xl bg-white p-3 shadow-sm">
+                    <WaIcon className="mt-0.5 h-5 w-5 shrink-0 fill-current text-green-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">Cierra por WhatsApp</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-gray-500">
+                        Escríbenos, te asesoramos en tiempo real y coordinamos tu pago —
+                        tarjeta o transferencia SPEI.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-4">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0D1F4E] text-xs font-bold text-white">
+                  03
+                </span>
+                <div>
+                  <p className="font-semibold text-gray-900">Recibe</p>
+                  <p className="mt-1 text-sm text-gray-500">Tu pedido sale en 24h y llega en 24-48h a tu ciudad.</p>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
