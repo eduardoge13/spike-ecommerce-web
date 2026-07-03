@@ -9,6 +9,8 @@ export interface Product {
   category?: string;
   stock?: number;
   sku?: string;
+  isNew?: boolean;
+  badgeText?: string; // Custom pill text set by admins; overrides the auto savings label
   whatsappMessage?: string; // Pre-filled WhatsApp message for this product
 }
 

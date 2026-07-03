@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const originalPriceInMXN = product.originalPrice
     ? formatMXNFromCents(product.originalPrice)
     : null;
-  const savingsLabel = getSavingsLabel(product.price, product.originalPrice);
+  const savingsLabel = product.badgeText ?? getSavingsLabel(product.price, product.originalPrice);
 
   return (
     <div className="group flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg">

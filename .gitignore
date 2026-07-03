@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local admin database + uploaded product images
+/.data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

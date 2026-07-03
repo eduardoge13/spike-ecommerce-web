@@ -7,3 +7,10 @@ services:
       - .env
     environment:
       NODE_ENV: production
+    volumes:
+      - ecommerce_db:/data/db
+      - ecommerce_uploads:/data/uploads
+
+volumes:
+  ecommerce_db:
+  ecommerce_uploads:
