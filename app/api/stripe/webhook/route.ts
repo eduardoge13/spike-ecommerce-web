@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { decrementStock, hasProcessedWebhookEvent, markWebhookEventProcessed } from '@/lib/products';
+import { getStripe } from '@/lib/stripe';
 
 export async function POST(request: Request) {
   const signingSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim() ?? '';
@@ -30,6 +32,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  // Stripe may redeliver the same event; skip if we've already handled it.
+  if (hasProcessedWebhookEvent(event.id)) {
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -39,6 +46,21 @@ export async function POST(request: Request) {
         customerEmail: session.customer_details?.email ?? null,
         amountTotal: session.amount_total ?? null,
       });
+
+      const productId = session.metadata?.productId;
+
+      if (productId) {
+        try {
+          const lineItems = await getStripe().checkout.sessions.listLineItems(session.id, {
+            limit: 100,
+          });
+          const quantity = lineItems.data.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+          decrementStock(productId, quantity);
+        } catch (error) {
+          console.error('[stripe] No se pudo descontar el stock para', productId, error);
+        }
+      }
+
       break;
     }
     case 'checkout.session.async_payment_failed':
@@ -50,6 +72,8 @@ export async function POST(request: Request) {
     default:
       console.info('[stripe] unhandled event', event.type);
   }
+
+  markWebhookEventProcessed(event.id);
 
   return NextResponse.json({ received: true });
 }

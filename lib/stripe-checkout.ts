@@ -40,6 +40,10 @@ export async function createProductCheckoutSession({
     );
   }
 
+  if (product.stock !== undefined && product.stock <= 0) {
+    throw new CheckoutError('Ese producto está agotado por el momento.', 409);
+  }
+
   const stripe = getStripe();
   const maxQuantity = Math.max(1, product.stock ?? 10);
   const checkoutQuantity = Math.max(1, Math.floor(quantity));

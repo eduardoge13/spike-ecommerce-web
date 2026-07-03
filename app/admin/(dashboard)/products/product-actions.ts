@@ -7,6 +7,7 @@ import { requireAdmin } from '@/lib/auth';
 import { createProduct, deleteProduct, getProductById, updateProduct } from '@/lib/products';
 import { deleteUploadedImage, saveUploadedImage, UploadError } from '@/lib/uploads';
 import { slugify } from '@/lib/slugify';
+import { archiveStripeProduct, syncProductToStripe } from '@/lib/stripe-sync';
 
 function toCents(value: FormDataEntryValue | null): number | undefined {
   if (!value) return undefined;
@@ -59,7 +60,8 @@ export async function createProductAction(formData: FormData) {
   const baseSlug = slugify(fields.name) || 'producto';
   const id = `${baseSlug}-${crypto.randomUUID().slice(0, 6)}`;
 
-  createProduct({ id, ...fields, price: fields.price!, images });
+  const created = createProduct({ id, ...fields, price: fields.price!, images });
+  await syncProductToStripe(created);
 
   revalidatePath('/');
   revalidatePath('/admin');
@@ -103,7 +105,10 @@ export async function updateProductAction(id: string, formData: FormData) {
     );
   }
 
-  updateProduct(id, { ...fields, price: fields.price!, images });
+  const updated = updateProduct(id, { ...fields, price: fields.price!, images });
+  if (updated) {
+    await syncProductToStripe(updated);
+  }
 
   const removedImages = (existing!.images ?? []).filter((img) => !keepImages.includes(img));
   await Promise.all(removedImages.map((img) => deleteUploadedImage(img)));
@@ -117,6 +122,7 @@ export async function deleteProductAction(id: string) {
   await requireAdmin();
 
   const existing = getProductById(id);
+  await archiveStripeProduct(id);
   deleteProduct(id);
 
   if (existing?.images) {

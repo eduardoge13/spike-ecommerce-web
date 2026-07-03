@@ -147,3 +147,45 @@ export function deleteProduct(id: string): boolean {
   const result = getDb().prepare('DELETE FROM products WHERE id = ?').run(id);
   return result.changes > 0;
 }
+
+export function decrementStock(id: string, quantity: number): void {
+  if (quantity <= 0) return;
+
+  getDb()
+    .prepare(
+      `UPDATE products
+       SET stock = MAX(stock - @quantity, 0)
+       WHERE id = @id AND stock IS NOT NULL`,
+    )
+    .run({ id, quantity });
+}
+
+export function getStripeProductId(id: string): string | null {
+  const row = getDb().prepare('SELECT stripe_product_id FROM products WHERE id = ?').get(id) as
+    | { stripe_product_id: string | null }
+    | undefined;
+
+  return row?.stripe_product_id ?? null;
+}
+
+export function setStripeProductId(id: string, stripeProductId: string): void {
+  getDb()
+    .prepare('UPDATE products SET stripe_product_id = ? WHERE id = ?')
+    .run(stripeProductId, id);
+}
+
+export function hasProcessedWebhookEvent(eventId: string): boolean {
+  const row = getDb()
+    .prepare('SELECT 1 FROM processed_webhook_events WHERE event_id = ?')
+    .get(eventId);
+
+  return Boolean(row);
+}
+
+export function markWebhookEventProcessed(eventId: string): void {
+  getDb()
+    .prepare(
+      'INSERT OR IGNORE INTO processed_webhook_events (event_id, processed_at) VALUES (?, ?)',
+    )
+    .run(eventId, new Date().toISOString());
+}

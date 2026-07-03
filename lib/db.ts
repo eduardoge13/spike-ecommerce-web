@@ -101,6 +101,11 @@ function seedAdminUser(db: Database.Database) {
   console.log(`[db] Seeded initial admin user: ${seedEmail}`);
 }
 
+function columnExists(db: Database.Database, table: string, column: string): boolean {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  return columns.some((col) => col.name === column);
+}
+
 function initSchema(db: Database.Database) {
   db.pragma('journal_mode = WAL');
 
@@ -127,7 +132,17 @@ function initSchema(db: Database.Database) {
       password_hash TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS processed_webhook_events (
+      event_id TEXT PRIMARY KEY,
+      processed_at TEXT NOT NULL
+    );
   `);
+
+  // Migration: add stripe_product_id to pre-existing databases that predate Stripe catalog sync.
+  if (!columnExists(db, 'products', 'stripe_product_id')) {
+    db.exec('ALTER TABLE products ADD COLUMN stripe_product_id TEXT');
+  }
 }
 
 export function getDb(): Database.Database {

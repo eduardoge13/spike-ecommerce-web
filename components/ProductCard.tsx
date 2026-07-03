@@ -19,6 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     ? formatMXNFromCents(product.originalPrice)
     : null;
   const savingsLabel = product.badgeText ?? getSavingsLabel(product.price, product.originalPrice);
+  const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
   return (
     <div className="group flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg">
@@ -34,10 +35,17 @@ export default function ProductCard({ product }: ProductCardProps) {
             {savingsLabel}
           </div>
         )}
-        {product.stock !== undefined && product.stock < 5 && (
-          <div className="absolute bottom-2 left-2 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-bold text-white">
-            Quedan {product.stock}
+        {isOutOfStock ? (
+          <div className="absolute bottom-2 left-2 rounded-full bg-gray-700 px-2.5 py-1 text-[10px] font-bold text-white">
+            Agotado
           </div>
+        ) : (
+          product.stock !== undefined &&
+          product.stock < 5 && (
+            <div className="absolute bottom-2 left-2 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-bold text-white">
+              Quedan {product.stock}
+            </div>
+          )
         )}
       </div>
 
@@ -61,7 +69,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           <div className="space-y-2">
-            <StripeCheckoutButton productId={product.id} productName={product.name} />
+            {isOutOfStock ? (
+              <button
+                type="button"
+                disabled
+                className="flex w-full cursor-not-allowed items-center justify-center rounded-lg bg-gray-200 px-5 py-3 text-sm font-bold text-gray-500"
+              >
+                Agotado
+              </button>
+            ) : (
+              <StripeCheckoutButton productId={product.id} productName={product.name} />
+            )}
             <a
               href={getWhatsAppLink(product)}
               target="_blank"
