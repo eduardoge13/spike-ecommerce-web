@@ -22,7 +22,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
   return (
-    <div className="group flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg">
+    <div
+      id={`producto-${product.id}`}
+      className="group flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
+    >
       <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-50">
         <Image
           src={product.image}

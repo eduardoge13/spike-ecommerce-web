@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, Outfit } from "next/font/google";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const syne = Syne({
@@ -17,8 +18,13 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Punto Clave MX — Tecnología Premium",
-  description: "Productos premium seleccionados. Precios exclusivos online. Envío rápido a toda la República Mexicana.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: {
+    default: `${SITE_NAME} - Tecnologia Premium`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({
