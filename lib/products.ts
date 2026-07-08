@@ -1,8 +1,10 @@
 import { Product } from '@/types/product';
 import { getDb } from '@/lib/db';
+import { slugify } from '@/lib/slugify';
 
 interface ProductRow {
   id: string;
+  slug: string;
   name: string;
   description: string;
   price: number;
@@ -22,6 +24,7 @@ function rowToProduct(row: ProductRow): Product {
 
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
     description: row.description,
     price: row.price,
@@ -52,6 +55,31 @@ export function getProductById(id: string): Product | undefined {
   return row ? rowToProduct(row) : undefined;
 }
 
+export function getProductBySlug(slug: string): Product | undefined {
+  const row = getDb().prepare('SELECT * FROM products WHERE slug = ?').get(slug) as
+    | ProductRow
+    | undefined;
+
+  return row ? rowToProduct(row) : undefined;
+}
+
+export function getUniqueProductSlug(value: string, currentProductId?: string): string {
+  const base = slugify(value) || 'producto';
+  let candidate = base;
+  let suffix = 2;
+
+  const statement = currentProductId
+    ? getDb().prepare('SELECT 1 FROM products WHERE slug = ? AND id != ?')
+    : getDb().prepare('SELECT 1 FROM products WHERE slug = ?');
+
+  while (currentProductId ? statement.get(candidate, currentProductId) : statement.get(candidate)) {
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+}
+
 export function getProductsByCategory(category: string): Product[] {
   const rows = getDb()
     .prepare('SELECT * FROM products WHERE category = ? ORDER BY created_at DESC')
@@ -62,6 +90,7 @@ export function getProductsByCategory(category: string): Product[] {
 
 export interface ProductInput {
   id: string;
+  slug?: string;
   name: string;
   description: string;
   price: number;
@@ -76,19 +105,21 @@ export interface ProductInput {
 
 export function createProduct(input: ProductInput): Product {
   const now = new Date().toISOString();
+  const slug = getUniqueProductSlug(input.slug || input.name);
 
   getDb()
     .prepare(
       `INSERT INTO products (
-        id, name, description, price, original_price, category, stock,
+        id, slug, name, description, price, original_price, category, stock,
         is_new, badge_text, whatsapp_message, images_json, created_at, updated_at
       ) VALUES (
-        @id, @name, @description, @price, @originalPrice, @category, @stock,
+        @id, @slug, @name, @description, @price, @originalPrice, @category, @stock,
         @isNew, @badgeText, @whatsappMessage, @imagesJson, @createdAt, @updatedAt
       )`,
     )
     .run({
       id: input.id,
+      slug,
       name: input.name,
       description: input.description,
       price: input.price,
@@ -108,10 +139,12 @@ export function createProduct(input: ProductInput): Product {
 
 export function updateProduct(id: string, input: Omit<ProductInput, 'id'>): Product | undefined {
   const now = new Date().toISOString();
+  const slug = getUniqueProductSlug(input.slug || input.name, id);
 
   const result = getDb()
     .prepare(
       `UPDATE products SET
+        slug = @slug,
         name = @name,
         description = @description,
         price = @price,
@@ -127,6 +160,7 @@ export function updateProduct(id: string, input: Omit<ProductInput, 'id'>): Prod
     )
     .run({
       id,
+      slug,
       name: input.name,
       description: input.description,
       price: input.price,

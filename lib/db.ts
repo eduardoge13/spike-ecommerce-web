@@ -4,9 +4,11 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import productsSeedData from '@/data/products.json';
 import { hashPassword } from '@/lib/password';
+import { slugify } from '@/lib/slugify';
 
 interface SeedProduct {
   id: string;
+  slug?: string;
   name: string;
   description: string;
   price: number;
@@ -41,10 +43,10 @@ function seedProducts(db: Database.Database) {
 
   const insert = db.prepare(`
     INSERT INTO products (
-      id, name, description, price, original_price, category, stock,
+      id, slug, name, description, price, original_price, category, stock,
       is_new, badge_text, whatsapp_message, images_json, created_at, updated_at
     ) VALUES (
-      @id, @name, @description, @price, @originalPrice, @category, @stock,
+      @id, @slug, @name, @description, @price, @originalPrice, @category, @stock,
       @isNew, @badgeText, @whatsappMessage, @imagesJson, @createdAt, @updatedAt
     )
   `);
@@ -56,6 +58,7 @@ function seedProducts(db: Database.Database) {
       const images = item.images && item.images.length > 0 ? item.images : [item.image];
       insert.run({
         id: item.id,
+        slug: item.slug ?? getUniqueSlugForSeed(db, item.name, item.id),
         name: item.name,
         description: item.description,
         price: item.price,
@@ -106,12 +109,45 @@ function columnExists(db: Database.Database, table: string, column: string): boo
   return columns.some((col) => col.name === column);
 }
 
+function getUniqueSlugForSeed(db: Database.Database, value: string, id: string): string {
+  const base = slugify(value) || slugify(id) || 'producto';
+  let candidate = base;
+  let suffix = 2;
+
+  while (
+    db
+      .prepare('SELECT 1 FROM products WHERE slug = ? AND id != ?')
+      .get(candidate, id)
+  ) {
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
+}
+
+function backfillProductSlugs(db: Database.Database) {
+  const rows = db.prepare('SELECT id, name, slug FROM products ORDER BY created_at ASC').all() as {
+    id: string;
+    name: string;
+    slug: string | null;
+  }[];
+
+  const update = db.prepare('UPDATE products SET slug = ? WHERE id = ?');
+
+  for (const row of rows) {
+    const slug = getUniqueSlugForSeed(db, row.slug || row.name, row.id);
+    update.run(slug, row.id);
+  }
+}
+
 function initSchema(db: Database.Database) {
   db.pragma('journal_mode = WAL');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
+      slug TEXT,
       name TEXT NOT NULL,
       description TEXT NOT NULL,
       price INTEGER NOT NULL,
@@ -143,6 +179,14 @@ function initSchema(db: Database.Database) {
   if (!columnExists(db, 'products', 'stripe_product_id')) {
     db.exec('ALTER TABLE products ADD COLUMN stripe_product_id TEXT');
   }
+
+  if (!columnExists(db, 'products', 'slug')) {
+    db.exec('ALTER TABLE products ADD COLUMN slug TEXT');
+  }
+
+  backfillProductSlugs(db);
+
+  db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_products_slug ON products(slug)');
 }
 
 export function getDb(): Database.Database {

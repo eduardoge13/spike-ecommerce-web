@@ -20,8 +20,12 @@ function absoluteUrl(pathOrUrl: string) {
   return `${SITE_URL}${pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`}`;
 }
 
-function productAnchorUrl(product: Product) {
-  return `${SITE_URL}/#producto-${product.id}`;
+export function getProductPath(product: Product) {
+  return `/producto/${product.slug}`;
+}
+
+export function getProductUrl(product: Product) {
+  return `${SITE_URL}${getProductPath(product)}`;
 }
 
 export function getPublicCatalogProducts(products: Product[]) {
@@ -51,7 +55,7 @@ export function getProductAvailability(product: Product) {
 export function getProductJsonLd(product: Product) {
   return {
     '@type': 'Product',
-    '@id': `${productAnchorUrl(product)}#schema`,
+    '@id': `${getProductUrl(product)}#schema`,
     name: product.name,
     description: product.description,
     image: getProductImages(product),
@@ -62,7 +66,7 @@ export function getProductJsonLd(product: Product) {
     sku: product.sku ?? product.id,
     offers: {
       '@type': 'Offer',
-      url: productAnchorUrl(product),
+      url: getProductUrl(product),
       priceCurrency: 'MXN',
       price: centsToMxPrice(product.price),
       availability: getProductAvailability(product),
@@ -100,12 +104,12 @@ export function getProductMetadata(product: Product): Metadata {
     title: `${product.name} | ${SITE_NAME}`,
     description: product.description,
     alternates: {
-      canonical: productAnchorUrl(product),
+      canonical: getProductUrl(product),
     },
     openGraph: {
       title: `${product.name} | ${SITE_NAME}`,
       description: product.description,
-      url: productAnchorUrl(product),
+      url: getProductUrl(product),
       siteName: SITE_NAME,
       locale: 'es_MX',
       type: 'website',

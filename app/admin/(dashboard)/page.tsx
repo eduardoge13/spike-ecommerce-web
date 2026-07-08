@@ -39,6 +39,7 @@ export default async function AdminProductsPage({ searchParams }: AdminHomeProps
             <tr>
               <th className="px-4 py-3">Foto</th>
               <th className="px-4 py-3">Nombre</th>
+              <th className="px-4 py-3">URL</th>
               <th className="px-4 py-3">Precio</th>
               <th className="px-4 py-3">Píldora</th>
               <th className="px-4 py-3">Stock</th>
@@ -54,6 +55,11 @@ export default async function AdminProductsPage({ searchParams }: AdminHomeProps
                   </div>
                 </td>
                 <td className="px-4 py-3 font-semibold text-gray-900">{product.name}</td>
+                <td className="px-4 py-3 text-xs text-gray-500">
+                  <Link href={`/producto/${product.slug}`} className="hover:text-[#0D1F4E]">
+                    /producto/{product.slug}
+                  </Link>
+                </td>
                 <td className="px-4 py-3 text-gray-700">
                   ${formatMXNFromCents(product.price)}
                   {product.originalPrice && (
@@ -86,7 +92,7 @@ export default async function AdminProductsPage({ searchParams }: AdminHomeProps
             ))}
             {products.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
                   Todavía no hay productos.
                 </td>
               </tr>

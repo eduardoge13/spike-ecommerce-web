@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
+import LegacyProductHashRedirect from '@/components/LegacyProductHashRedirect';
 import StoreFront from '@/components/StoreFront';
 import { getAllProducts } from '@/lib/products';
 import {
@@ -19,10 +20,18 @@ export function generateMetadata(): Metadata {
 
 export default function Home() {
   const products = getCachedProducts();
-  const productJsonLd = getCatalogProductJsonLd(getPublicCatalogProducts(products));
+  const publicProducts = getPublicCatalogProducts(products);
+  const productJsonLd = getCatalogProductJsonLd(publicProducts);
+  const legacyProductPaths = Object.fromEntries(
+    publicProducts.flatMap((product) => [
+      [product.id, `/producto/${product.slug}`],
+      [`producto-${product.id}`, `/producto/${product.slug}`],
+    ]),
+  );
 
   return (
     <>
+      <LegacyProductHashRedirect productPaths={legacyProductPaths} />
       <script
         id="catalog-product-jsonld"
         type="application/ld+json"

@@ -26,6 +26,23 @@ export default function ProductFormFields({ product }: ProductFormFieldsProps) {
       </div>
 
       <div className="sm:col-span-2">
+        <label htmlFor="slug" className="block text-sm font-semibold text-gray-700">
+          URL del producto (slug)
+        </label>
+        <input
+          id="slug"
+          name="slug"
+          type="text"
+          defaultValue={product?.slug}
+          placeholder="Se genera automáticamente si lo dejas vacío"
+          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0D1F4E] focus:outline-none"
+        />
+        <p className="mt-1 text-xs text-gray-400">
+          Ejemplo: iphone-17-pro-max. Si se repite, el sistema agregará un sufijo.
+        </p>
+      </div>
+
+      <div className="sm:col-span-2">
         <label htmlFor="description" className="block text-sm font-semibold text-gray-700">
           Descripción
         </label>

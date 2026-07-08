@@ -1,8 +1,10 @@
 import { Product } from '@/types/product';
 import Image from 'next/image';
+import Link from 'next/link';
 import StripeCheckoutButton from '@/components/StripeCheckoutButton';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
 import { formatMXNFromCents, getSavingsLabel } from '@/lib/pricing';
+import { getProductPath } from '@/lib/seo';
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     : null;
   const savingsLabel = product.badgeText ?? getSavingsLabel(product.price, product.originalPrice);
   const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+  const productPath = getProductPath(product);
 
   return (
     <div
@@ -27,12 +30,14 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="group flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
     >
       <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-50">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
-        />
+        <Link href={productPath} aria-label={`Ver detalles de ${product.name}`}>
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+          />
+        </Link>
         {savingsLabel && (
           <div className="absolute right-2 top-2 rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-white shadow">
             {savingsLabel}
@@ -54,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col p-4">
         <h3 className="mb-1 line-clamp-1 text-base font-bold text-gray-900 transition-colors group-hover:text-[#0D1F4E]">
-          {product.name}
+          <Link href={productPath}>{product.name}</Link>
         </h3>
         <p className="mb-3 line-clamp-2 flex-1 text-xs leading-relaxed text-gray-500">
           {product.description}
@@ -94,6 +99,12 @@ export default function ProductCard({ product }: ProductCardProps) {
               </svg>
               Comprar por WhatsApp
             </a>
+            <Link
+              href={productPath}
+              className="flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-[#0D1F4E] transition-colors hover:bg-slate-50"
+            >
+              Ver detalles
+            </Link>
           </div>
         </div>
       </div>

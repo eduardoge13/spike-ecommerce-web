@@ -19,6 +19,7 @@ function toCents(value: FormDataEntryValue | null): number | undefined {
 function parseCommonFields(formData: FormData) {
   return {
     name: String(formData.get('name') ?? '').trim(),
+    slug: slugify(String(formData.get('slug') ?? '').trim()) || undefined,
     description: String(formData.get('description') ?? '').trim(),
     price: toCents(formData.get('price')),
     originalPrice: toCents(formData.get('originalPrice')),

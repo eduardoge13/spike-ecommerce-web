@@ -1,5 +1,6 @@
 export interface Product {
   id: string;
+  slug: string;
   name: string;
   description: string;
   price: number; // Price in MXN cents (e.g., 10000 = $100.00 MXN)
