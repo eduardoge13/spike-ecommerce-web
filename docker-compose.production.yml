@@ -8,9 +8,10 @@ services:
       - traefik.http.routers.ecommerce.entrypoints=web,websecure
       - traefik.http.routers.ecommerce.tls.certresolver=mytlschallenge
       - traefik.http.services.ecommerce.loadbalancer.server.port=3000
+      - traefik.docker.network=shop_proxy
     networks:
-      - n8n_default
+      - shop_proxy
 
 networks:
-  n8n_default:
+  shop_proxy:
     external: true
