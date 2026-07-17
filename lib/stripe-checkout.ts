@@ -46,7 +46,7 @@ export async function createProductCheckoutSession({
 
   const stripe = getStripe();
   const maxQuantity = Math.max(1, product.stock ?? 10);
-  const checkoutQuantity = Math.max(1, Math.floor(quantity));
+  const checkoutQuantity = Math.min(maxQuantity, Math.max(1, Math.floor(quantity)));
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
@@ -63,6 +63,13 @@ export async function createProductCheckoutSession({
       },
     },
     billing_address_collection: 'required',
+    // Fuerza 3D Secure en toda transacción con tarjeta: si la autenticación
+    // es exitosa, la responsabilidad por contracargos de fraude pasa al banco emisor.
+    payment_method_options: {
+      card: {
+        request_three_d_secure: 'any',
+      },
+    },
     phone_number_collection: { enabled: true },
     shipping_address_collection: { allowed_countries: ['MX'] },
     customer_creation: 'always',

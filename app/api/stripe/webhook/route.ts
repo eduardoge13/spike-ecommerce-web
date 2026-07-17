@@ -3,6 +3,22 @@ import Stripe from 'stripe';
 import { decrementStock, hasProcessedWebhookEvent, markWebhookEventProcessed } from '@/lib/products';
 import { getStripe } from '@/lib/stripe';
 
+async function fulfillCheckoutSession(session: Stripe.Checkout.Session) {
+  const productId = session.metadata?.productId;
+
+  if (!productId) return;
+
+  try {
+    const lineItems = await getStripe().checkout.sessions.listLineItems(session.id, {
+      limit: 100,
+    });
+    const quantity = lineItems.data.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+    decrementStock(productId, quantity);
+  } catch (error) {
+    console.error('[stripe] No se pudo descontar el stock para', productId, error);
+  }
+}
+
 export async function POST(request: Request) {
   const signingSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim() ?? '';
   const stripeSignature = request.headers.get('stripe-signature');
@@ -45,22 +61,40 @@ export async function POST(request: Request) {
         sessionId: session.id,
         customerEmail: session.customer_details?.email ?? null,
         amountTotal: session.amount_total ?? null,
+        paymentStatus: session.payment_status,
       });
 
-      const productId = session.metadata?.productId;
-
-      if (productId) {
-        try {
-          const lineItems = await getStripe().checkout.sessions.listLineItems(session.id, {
-            limit: 100,
-          });
-          const quantity = lineItems.data.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
-          decrementStock(productId, quantity);
-        } catch (error) {
-          console.error('[stripe] No se pudo descontar el stock para', productId, error);
-        }
+      // Métodos asíncronos (p. ej. OXXO/SPEI) completan la sesión con el pago
+      // aún pendiente; el stock se descuenta hasta checkout.session.async_payment_succeeded.
+      if (session.payment_status === 'paid') {
+        await fulfillCheckoutSession(session);
       }
 
+      break;
+    }
+    case 'checkout.session.async_payment_succeeded': {
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      console.info('[stripe] checkout.session.async_payment_succeeded', {
+        sessionId: session.id,
+      });
+
+      await fulfillCheckoutSession(session);
+      break;
+    }
+    case 'charge.dispute.created': {
+      const dispute = event.data.object as Stripe.Dispute;
+
+      console.error('[stripe] CONTRACARGO RECIBIDO — responder antes de la fecha límite', {
+        disputeId: dispute.id,
+        chargeId: typeof dispute.charge === 'string' ? dispute.charge : dispute.charge.id,
+        amount: dispute.amount,
+        currency: dispute.currency,
+        reason: dispute.reason,
+        evidenceDueBy: dispute.evidence_details?.due_by
+          ? new Date(dispute.evidence_details.due_by * 1000).toISOString()
+          : null,
+      });
       break;
     }
     case 'checkout.session.async_payment_failed':

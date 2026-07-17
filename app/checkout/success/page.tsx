@@ -68,7 +68,8 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
   const customerEmail = session?.customer_details?.email ?? 'No disponible';
   const customerName = session?.customer_details?.name ?? 'Cliente';
   const amountTotal = session?.amount_total ?? null;
-  const paymentStatus = session?.payment_status ?? 'paid';
+  const paymentStatus = session?.payment_status ?? null;
+  const isPaid = paymentStatus === 'paid';
   const whatsappMessage = session
     ? `Hola! Ya pagué mi pedido ${session.id} en Punto Clave MX. Quiero confirmar mi envío.`
     : 'Hola! Ya realicé mi pago en Punto Clave MX y quiero confirmar mi pedido.';
@@ -78,14 +79,15 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-[#0D1F4E] via-[#0A1637] to-cyan-950/60 p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-200">
-            Pedido confirmado
+            {isPaid ? 'Pedido confirmado' : 'Pago en proceso'}
           </p>
           <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">
             Gracias por tu compra, {customerName}.
           </h1>
           <p className="mt-3 max-w-2xl text-slate-300">
-            Tu pago se registró correctamente en Punto Clave MX. Ya tenemos tus datos de
-            contacto y usaremos la información de checkout para coordinar el envío.
+            {isPaid
+              ? 'Tu pago se registró correctamente en Punto Clave MX. Ya tenemos tus datos de contacto y usaremos la información de checkout para coordinar el envío.'
+              : 'Tu pago aún está en proceso de confirmación. En cuanto se acredite, usaremos tus datos de checkout para coordinar el envío. Si tienes duda, escríbenos por WhatsApp.'}
           </p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -94,7 +96,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
                 Estatus
               </p>
               <p className="mt-2 text-lg font-bold capitalize text-white">
-                {paymentStatus === 'paid' ? 'Pagado' : paymentStatus}
+                {isPaid ? 'Pagado' : paymentStatus === 'unpaid' ? 'En proceso' : (paymentStatus ?? 'No disponible')}
               </p>
             </article>
             <article className="rounded-2xl border border-white/10 bg-white/5 p-4">
