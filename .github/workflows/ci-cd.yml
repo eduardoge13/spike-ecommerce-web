@@ -71,6 +71,7 @@ jobs:
         env:
           PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
           PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_PORT: ${{ vars.PRODUCTION_SSH_PORT }}
           PRODUCTION_APP_DIR: ${{ vars.PRODUCTION_APP_DIR }}
           PRODUCTION_COMPOSE_PROJECT: ${{ vars.PRODUCTION_COMPOSE_PROJECT }}
           PRODUCTION_HEALTHCHECK_URL: ${{ vars.PRODUCTION_HEALTHCHECK_URL }}
@@ -79,6 +80,7 @@ jobs:
           set -euo pipefail
           : "${PRODUCTION_HOST:?Missing PRODUCTION_HOST secret}"
           : "${PRODUCTION_USER:?Missing PRODUCTION_USER secret}"
+          PRODUCTION_SSH_PORT="${PRODUCTION_SSH_PORT:-22}"
           : "${PRODUCTION_APP_DIR:?Missing PRODUCTION_APP_DIR variable}"
           : "${PRODUCTION_COMPOSE_PROJECT:?Missing PRODUCTION_COMPOSE_PROJECT variable}"
           : "${PRODUCTION_HEALTHCHECK_URL:?Missing PRODUCTION_HEALTHCHECK_URL variable}"
@@ -88,6 +90,7 @@ jobs:
             -o BatchMode=yes \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
+            -p "$PRODUCTION_SSH_PORT" \
             "${PRODUCTION_USER}@${PRODUCTION_HOST}" \
             "APP_DIR='${PRODUCTION_APP_DIR}' DEPLOY_BRANCH='${PRODUCTION_BRANCH}' COMPOSE_PROJECT_NAME='${PRODUCTION_COMPOSE_PROJECT}' HEALTHCHECK_URL='${PRODUCTION_HEALTHCHECK_URL}' bash -s" <<'REMOTE'
           set -euo pipefail
