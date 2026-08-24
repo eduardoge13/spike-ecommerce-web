@@ -101,7 +101,7 @@ export function getProductMetadata(product: Product): Metadata {
   const [primaryImage] = getProductImages(product);
 
   return {
-    title: `${product.name} | ${SITE_NAME}`,
+    title: product.name,
     description: product.description,
     alternates: {
       canonical: getProductUrl(product),
