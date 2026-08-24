@@ -5,11 +5,13 @@ import { useState } from 'react';
 interface StripeCheckoutButtonProps {
   productId: string;
   productName: string;
+  variant?: 'default' | 'showroom' | 'detail';
 }
 
 export default function StripeCheckoutButton({
   productId,
   productName,
+  variant = 'default',
 }: StripeCheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -56,7 +58,11 @@ export default function StripeCheckoutButton({
         onClick={handleCheckout}
         disabled={isLoading}
         aria-label={`Pagar ${productName} con tarjeta mediante Stripe`}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0D1F4E] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#11265d] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+        className={variant === 'showroom'
+          ? 'showroom-stripe-button'
+          : variant === 'detail'
+            ? 'detail-stripe-button'
+            : 'flex w-full items-center justify-center gap-2 rounded-lg bg-[#0D1F4E] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#11265d] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70'}
       >
         {isLoading ? (
           <>
