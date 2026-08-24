@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Link href="/" className="brand-lockup" aria-label="Volver a Punto Clave MX">
             <Image src="/logo-wide.jpeg" alt="Punto Clave MX" width={190} height={57} className="h-10 w-auto" priority />
           </Link>
-          <Link href="/#productos" className="product-back-link"><span>←</span> Volver a la colección</Link>
+          <Link href="/productos" className="product-back-link"><span>←</span> Volver a la colección</Link>
         </div>
       </header>
 

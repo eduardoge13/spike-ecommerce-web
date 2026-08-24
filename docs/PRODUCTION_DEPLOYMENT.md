@@ -119,6 +119,8 @@ git reset --hard origin/main
 
 ## Current Production Routes
 
+- `puntoclaveshop.com.mx`
+- `www.puntoclaveshop.com.mx`
 - `shop.srv1175749.hstgr.cloud`
-- `clinica.srv1175749.hstgr.cloud`
-- `n8n.srv1175749.hstgr.cloud`
+
+The public shop application exposes `/`, `/productos`, `/como-comprar`, `/pago-seguro`, and `/producto/[slug]`. See `docs/MULTIPAGE_SHOWROOM.md` for the information architecture and legacy-link behavior.

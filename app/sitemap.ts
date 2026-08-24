@@ -13,6 +13,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1,
     },
+    ...[
+      ['/productos', 0.9],
+      ['/como-comprar', 0.7],
+      ['/pago-seguro', 0.7],
+    ].map(([path, priority]) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: priority as number,
+    })),
     ...products.map((product) => ({
       url: getProductUrl(product),
       lastModified: now,

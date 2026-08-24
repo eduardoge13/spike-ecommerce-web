@@ -28,6 +28,11 @@ export default function Home() {
       [`producto-${product.id}`, `/producto/${product.slug}`],
     ]),
   );
+  Object.assign(legacyProductPaths, {
+    productos: '/productos',
+    'como-funciona': '/como-comprar',
+    pago: '/pago-seguro',
+  });
 
   return (
     <>
