@@ -35,8 +35,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 # Ensure the native addon ships even if standalone tracing misses non-JS assets
 COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 
-# Persistent volumes for the admin panel's database and uploaded product images
-RUN mkdir -p /data/db /data/uploads && chown -R nextjs:nodejs /data
+# Persistent volumes for admin data plus a writable Next.js image cache.
+RUN mkdir -p /data/db /data/uploads /app/.next/cache \
+    && chown -R nextjs:nodejs /data /app/.next
 
 USER nextjs
 
