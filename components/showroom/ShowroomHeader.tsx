@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
 import ShowroomIcon from './ShowroomIcon';
 
@@ -18,6 +18,20 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
 export default function ShowroomHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [menuOpen]);
 
   return (
     <>
@@ -46,12 +60,12 @@ export default function ShowroomHeader() {
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="button-ghost"><ShowroomIcon name="whatsapp" className="h-4 w-4" /> WhatsApp</a>
             <Link href="/productos" className="button-primary">Explorar tienda</Link>
           </div>
-          <button type="button" className="showroom-menu-button md:hidden" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}>
+          <button type="button" className="showroom-menu-button md:hidden" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-controls="showroom-mobile-navigation" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}>
             <ShowroomIcon name={menuOpen ? 'close' : 'menu'} />
           </button>
         </div>
         {menuOpen && (
-          <div className="showroom-mobile-menu md:hidden">
+          <div id="showroom-mobile-navigation" className="showroom-mobile-menu md:hidden">
             {navigation.map((item) => <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
           </div>

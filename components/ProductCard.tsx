@@ -49,8 +49,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       className="showroom-product-card"
       onPointerMove={handlePointerMove}
       onPointerLeave={resetTilt}
-      data-reveal
-      style={{ transitionDelay: `${Math.min(index, 3) * 90}ms` } as React.CSSProperties}
+      data-catalog-card
+      style={{ animationDelay: `${Math.min(index, 3) * 80}ms` } as React.CSSProperties}
     >
       <div className="product-card-shine" />
       <div className="product-card-topline"><span>{product.category ?? 'Tecnología'}</span><span>{String(index + 1).padStart(2, '0')}</span></div>

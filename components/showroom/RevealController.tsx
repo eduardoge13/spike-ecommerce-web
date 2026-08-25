@@ -19,8 +19,25 @@ export default function RevealController() {
       }),
       { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
     );
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    const observeElement = (element: HTMLElement) => {
+      if (!element.classList.contains('is-visible')) observer.observe(element);
+    };
+    const observeTree = (node: Node) => {
+      if (!(node instanceof HTMLElement)) return;
+      if (node.matches('[data-reveal]')) observeElement(node);
+      node.querySelectorAll<HTMLElement>('[data-reveal]').forEach(observeElement);
+    };
+
+    elements.forEach(observeElement);
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => mutation.addedNodes.forEach(observeTree));
+    });
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      mutationObserver.disconnect();
+      observer.disconnect();
+    };
   }, []);
 
   return null;
