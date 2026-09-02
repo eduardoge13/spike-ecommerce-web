@@ -94,9 +94,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero-title span { color: transparent; background: linear-gradient(100deg, var(--cyan-light), var(--cyan) 40%, #63b6e7 75%); background-clip: text; -webkit-background-clip: text; }
 .hero-copy { max-width: 37rem; margin-top: 1.65rem; color: rgba(226,232,240,.76); font-size: clamp(1rem, 1.25vw, 1.14rem); line-height: 1.75; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
-.hero-proof { display: flex; flex-wrap: wrap; gap: 1.15rem; margin-top: 2rem; color: rgba(226,232,240,.65); font-size: .72rem; font-weight: 600; }
-.hero-proof span { display: inline-flex; align-items: center; gap: .38rem; }
-.hero-proof svg { width: .95rem; color: var(--cyan); }
+.hero-proof { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem; font-size: .7rem; font-weight: 700; }
+.hero-proof span { display: inline-flex; align-items: center; gap: .42rem; border: 1px solid rgba(125,235,240,.26); border-radius: 999px; background: rgba(34,196,204,.09); padding: .38rem .8rem; color: rgba(226,232,240,.9); backdrop-filter: blur(8px); }
+.hero-proof svg { width: 1rem; color: var(--cyan-light); }
 
 .product-stage { width: min(100%, 660px); margin-inline: auto; perspective: 1500px; }
 .product-stage-glow { position: absolute; inset: 12% 4% 4%; border-radius: 50%; background: radial-gradient(circle, rgba(34,196,204,.18), transparent 68%); filter: blur(34px); }
