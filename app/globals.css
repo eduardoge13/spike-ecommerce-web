@@ -313,7 +313,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .hero-copy { font-size: .94rem; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .hero-actions a { width: 100%; }
-  .hero-proof { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .hero-proof { display: flex; flex-wrap: wrap; gap: .45rem; }
   .product-stage { width: 100%; }
   .hero-product-panel { min-height: 530px; border-radius: 1.5rem; }
   .hero-product-image-wrap { height: 315px; margin-inline: .55rem; }
