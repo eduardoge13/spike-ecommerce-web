@@ -18,6 +18,16 @@ const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
 export default function ShowroomHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(max > 0 ? (window.scrollY / max) * 100 : 0);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -45,6 +55,7 @@ export default function ShowroomHeader() {
         </div>
       </div>
       <header className="showroom-header">
+        <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} aria-hidden="true" />
         <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-4 sm:px-8 lg:px-12">
           <Link href="/" aria-label="Punto Clave MX, inicio" className="brand-lockup">
             <Image src="/logo-wide.jpeg" alt="Punto Clave MX" width={200} height={60} className="h-10 w-auto object-contain sm:h-11" priority />
